@@ -53,7 +53,7 @@ class ListingServiceImplement extends Service implements ListingService{
       }
     }
 
-    public function updateListing(array $data, $id){
+    public function updateListing(){
       try{
         DB::beginTransaction();
 
