@@ -18,32 +18,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $role = [
-            [
-                'name' => 'Owner',
-                'guard_name' => 'web',
-            ],
-            [
-                'name' => 'Admin',
-                'guard_name' => 'web',
-            ],
-            [
-                'name' => 'Customer',
-                'guard_name' => 'web',
-            ],
-            [
-                'name' => 'Agent',
-                'guard_name' => 'web',
-            ],
-            [
-                'name' => 'PR',
-                'guard_name' => 'web',
-            ]
-
-        ];
-        for ($i=0; $i < count($role); $i++) { 
-            Role::create($role[$i]);
-        }
+        $owner = Role::create([
+            'name' => 'owner',
+            'guard_name' => 'web',
+        ]);
+        $admin = Role::create([
+            'name' => 'admin',
+            'guard_name' => 'web',
+        ]);
+        $customer = Role::create([
+            'name' => 'customer',
+            'guard_name' => 'web',
+        ]);
+        $agent = Role::create([
+            'name' => 'agent',
+            'guard_name' => 'web',
+        ]);
+        $pr = Role::create([
+            'name' => 'pr',
+            'guard_name' => 'web',
+        ]);
         $user =  User::create(
                 [
                     'name'     => 'owner',
@@ -52,7 +46,7 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         $user = User::find(1);
-        $user -> assignRole('Owner');
+        $user -> assignRole('owner');
         
     }
 }
