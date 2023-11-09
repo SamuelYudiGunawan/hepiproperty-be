@@ -6,8 +6,11 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use Database\Seeders\KotaSeeder;
 use Spatie\Permission\Models\Role;
+use Database\Seeders\ProvinsiSeeder;
+use Illuminate\Support\Facades\Hash;
+use Database\Seeders\KecamatanSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -48,5 +51,8 @@ class DatabaseSeeder extends Seeder
         $user = User::find(1);
         $user -> assignRole('owner');
         
+        $this->call(ProvinsiSeeder::class);
+        $this->call(KotaSeeder::class);
+        $this->call(KecamatanSeeder::class);
     }
 }
