@@ -32,6 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
     Route::group(['prefix'=>'/agent', 'middleware'=>['role:admin|owner|agent']], function () {
         Route::get('/property/list', [PropertyController::class, 'getPaginateByAgent']);
+        Route::post('/property/filter', [PropertyController::class, 'agentPropertyFilter']);
     });
     Route::group(['prefix'=>'/property'], function () {
         Route::group(['middleware' => ['role:owner|admin|agent']], function () {
