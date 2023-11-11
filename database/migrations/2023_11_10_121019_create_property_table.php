@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('judul');
             $table->string('status');
             $table->string('tipe_properti');
-            $table->integer('harga');
+            $table->unsignedBigInteger('harga');
             $table->text('deskripsi');
             $table->string('area');
             $table->foreignId('provinsi_id')->nullable()->constrained('provinsis');

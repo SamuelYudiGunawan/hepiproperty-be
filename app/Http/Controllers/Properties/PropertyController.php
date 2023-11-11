@@ -248,4 +248,76 @@ class PropertyController extends Controller
             ], 400);
         }
     }
+
+    public function searchFilter(Request $request){
+        $validator = Validator::make($request->all(), [
+            'kata_kunci' => 'string',
+            'status' => 'string',
+            'tipe_properti' => 'string',
+            'min_harga' => 'integer',
+            'max_harga' => 'integer',
+            'min_luas_tanah' => 'integer',
+            'max_luas_tanah' => 'integer',
+            'kamar_tidur' => 'integer',
+            'kamar_mandi' => 'integer',
+            'provinsi_id' => 'integer',
+            'kota_id' => 'integer',
+            'kecamatan_id' => 'integer',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+                'status' => 'error'
+            ], 400);
+        }
+        $property = Property::query();
+        if($request->kata_kunci){
+            $property->where('judul', 'like', '%'.$request->kata_kunci.'%');
+        }
+        if($request->status){
+            $property->where('status', $request->status);
+        }
+        if($request->tipe_properti){
+            $property->where('tipe_properti', $request->tipe_properti);
+        }
+        if($request->min_harga){
+            $property->where('harga', '>=', $request->min_harga);
+        }
+        if($request->max_harga){
+            $property->where('harga', '<=', $request->max_harga);
+        }
+        if($request->min_luas_tanah){
+            $property->where('luas_tanah', '>=', $request->min_luas_tanah);
+        }
+        if($request->max_luas_tanah){
+            $property->where('luas_tanah', '<=', $request->max_luas_tanah);
+        }
+        if($request->kamar_tidur){
+            $property->where('kamar_tidur', $request->kamar_tidur);
+        }
+        if($request->kamar_mandi){
+            $property->where('kamar_mandi', $request->kamar_mandi);
+        }
+        if($request->provinsi_id){
+            $property->where('provinsi_id', $request->provinsi_id);
+        }
+        if($request->kota_id){
+            $property->where('kota_id', $request->kota_id);
+        }
+        if($request->kecamatan_id){
+            $property->where('kecamatan_id', $request->kecamatan_id);
+        }
+        $get= $property->get();
+        if($get->count() > 0){
+            return response()->json([
+                'message' => 'data found',
+                'status' => 'found',
+                'data' => $get
+            ], 200);
+        }
+        return response()->json([
+            'message' => 'data not found',
+            'status' => 'error'
+        ], 404);
+    }
 }
