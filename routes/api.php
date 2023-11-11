@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use Illuminate\Foundation\Console\RouteListCommand;
+use App\Http\Controllers\Properties\PropertyController;
 use App\Http\Controllers\Listing\CreateListingController;
 use App\Http\Controllers\Listing\GetAllListingController;
 use App\Http\Controllers\Listing\UpdateListingController;
-use Illuminate\Foundation\Console\RouteListCommand;
-use Illuminate\Routing\RouteGroup;
+use App\Models\Property;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,22 +21,25 @@ use Illuminate\Routing\RouteGroup;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 Route::group(['prefix'=>'/auth'], function () {
-    Route::post('/register', [AuthController::class, 'Register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:sanctum']);
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::group(['prefix'=>'/admin', 'middleware'=>['role:admin|owner']], function () {
+        Route::post('/user/create/{role}', [AuthController::class, 'register']);
+    });
+    Route::group(['prefix'=>'/agent', 'middleware'=>['role:admin|owner|agent']], function () {
+        Route::get('/property/list', [PropertyController::class, 'getPaginateByAgent']);
+    });
     Route::group(['prefix'=>'/property'], function () {
-        Route::post('/create', [PropertyController::class, 'create']);
-        Route::get('/get-all', [PropertyController::class, 'getAll']);
-        Route::get('/get/{id}', [PropertyController::class, 'get']);
-        Route::put('/update/{id}', [PropertyController::class, 'update']);
-        Route::delete('/delete/{id}', [PropertyController::class, 'delete']);
+        Route::group(['middleware' => ['role:owner|admin|agent']], function () {
+            Route::post('/create', [PropertyController::class, 'create']);
+            Route::post('/update/id/{id}', [PropertyController::class, 'update']);
+            Route::post('/delete/id/{id}', [PropertyController::class, 'delete']);
+        });
+
     });
 });
 
@@ -45,7 +49,4 @@ Route::get('/token-invalid', function () {
         'status'  => 'error'
     ], 400);
 })->name('login');
-Route::post('/listing', CreateListingController::class);
-Route::get('/get-all-listing', GetAllListingController::class);
-Route::put('/listings/{id}', UpdateListingController::class);
-Route::delete('/listings/{id}', UpdateListingController::class);
+Route::get('/property/list', [PropertyController::class, 'getPaginate']);
