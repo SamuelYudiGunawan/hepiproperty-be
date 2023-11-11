@@ -50,3 +50,4 @@ Route::get('/token-invalid', function () {
     ], 400);
 })->name('login');
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
+Route::get('/property/detail/id/{id}', [PropertyController::class, 'detail']);

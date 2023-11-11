@@ -187,9 +187,9 @@ class PropertyController extends Controller
         }
     }
 
-    public function detail(Request $request, $id){
+    public function detail($id){
         try {
-            $property = Property::find($id);
+            $property = Property::with('images', 'creator')->find($id);
             if($property){
                 return response()->json([
                     'message' => 'data found',
