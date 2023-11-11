@@ -11,6 +11,7 @@ use Spatie\Permission\Models\Role;
 use Database\Seeders\ProvinsiSeeder;
 use Illuminate\Support\Facades\Hash;
 use Database\Seeders\KecamatanSeeder;
+use Database\Seeders\PropertyTypeSeeder;
 
 class DatabaseSeeder extends Seeder
 {

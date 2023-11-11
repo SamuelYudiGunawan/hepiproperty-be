@@ -54,7 +54,10 @@ class User extends Authenticatable
         ]);
 
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()], 400);
+            return response()->json([
+                'message' => $validator->errors()->first(),
+                'status' => 'error'
+            ], 400);
         }
 
         $user = User::create([
@@ -62,6 +65,12 @@ class User extends Authenticatable
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
         ]);
+
+        if($role == 'agent'){
+            AgentIndexing::create([
+                'agent_id' => $user->id,
+            ]);
+        }
 
         $user->assignRole($role);
         $token = $user->createToken('auth_token')->plainTextToken;

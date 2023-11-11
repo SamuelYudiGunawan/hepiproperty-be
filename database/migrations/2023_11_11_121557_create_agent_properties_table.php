@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('agent_indexings', function (Blueprint $table) {
+        Schema::create('agent_properties', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('agent_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('agent_id')->constrained('users');
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('agent_indexings');
+        Schema::dropIfExists('agent_properties');
     }
 };

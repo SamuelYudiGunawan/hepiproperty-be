@@ -13,17 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('property', function (Blueprint $table) {
+        Schema::create('properties', function (Blueprint $table) {
             $table->id();
             $table->string('judul');
-            $table->string('tipe');
-            $table->string('tipe_bangunan');
+            $table->string('status');
+            $table->string('tipe_properti');
             $table->integer('harga');
             $table->text('deskripsi');
             $table->string('area');
-            $table->foreignId('provinsi_id')->nullable()->constrained('provinsis')->onDelete('cascade');
-            $table->foreignId('kota_id')->nullable()->constrained('kotas')->onDelete('cascade');
-            $table->foreignId('kecamatan_id')->nullable()->constrained('kecamatans')->onDelete('cascade');
+            $table->foreignId('provinsi_id')->nullable()->constrained('provinsis');
+            $table->foreignId('kota_id')->nullable()->constrained('kotas');
+            $table->foreignId('kecamatan_id')->nullable()->constrained('kecamatans');
             $table->integer('kamar_tidur')->nullable();
             $table->integer('kamar_mandi')->nullable();
             $table->integer('luas_tanah')->nullable();
