@@ -12,6 +12,7 @@ use App\Models\AgentProperty;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Jorenvh\Share\Share;
 
 class PropertyController extends Controller
 {
@@ -391,5 +392,21 @@ class PropertyController extends Controller
             'message' => 'data not found',
             'status' => 'error'
         ], 404);
+    }
+
+    public function share (string $url){
+        $share = new Share();
+        $link = $share->page($url)
+        ->facebook()
+        ->twitter()
+        ->whatsapp()
+        ->telegram()
+        ->getRawLinks();
+
+        return response()->json([
+            'message' => 'share link',
+            'status' => 'found',
+            'data' => $link
+        ], 200);
     }
 }
