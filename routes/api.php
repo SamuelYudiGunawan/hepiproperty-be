@@ -53,3 +53,4 @@ Route::get('/token-invalid', function () {
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
 Route::get('/property/detail/id/{id}', [PropertyController::class, 'detail']);
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
+Route::get('/property/share/{url}', [PropertyController::class, 'share']);
