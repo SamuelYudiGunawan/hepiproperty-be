@@ -6,17 +6,20 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Listing extends Model
+class Property extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'judul',
-        'tipe',
-        'tipe_bangunan',
-        'harga',
+        'status',
+        'tipe_properti',
         'deskripsi',
+        'harga',
         'area',
+        'provinsi_id',
+        'kota_id',
+        'kecamatan_id',
         'luas_tanah',
         'luas_bangunan',
         'kamar_tidur',
@@ -26,14 +29,29 @@ class Listing extends Model
         'listrik',
         'air',
         'sertifikat',
-        'hadap',
+        'posisi_rumah',
         'garasi_dan_carport',
-        'furnished',
-        'user_id',
+        'kondisi_bangunan',
+        'agent_id'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(PropertyImage::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'agent_id', 'id');
+    }
+
+    public function agents()
+    {
+        return $this->hasMany(AgentProperty::class);
     }
 }
