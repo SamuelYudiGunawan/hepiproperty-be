@@ -8,6 +8,7 @@ use App\Http\Controllers\Properties\PropertyController;
 use App\Http\Controllers\Listing\CreateListingController;
 use App\Http\Controllers\Listing\GetAllListingController;
 use App\Http\Controllers\Listing\UpdateListingController;
+use App\Http\Controllers\UserController;
 use App\Models\Property;
 
 /*
@@ -28,7 +29,13 @@ Route::group(['prefix'=>'/auth'], function () {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix'=>'/admin', 'middleware'=>['role:admin|owner']], function () {
-        Route::post('/user/create/{role}', [AuthController::class, 'register']);
+        Route::group(['prefix'=>'/user'], function () {
+            Route::post('/create/{role}', [AuthController::class, 'register']);
+            Route::post('/update/id/{id}', [UserController::class, 'update']);
+            Route::post('/delete/id/{id}', [UserController::class, 'delete']);
+            Route::get('/list', [UserController::class, 'getPaginate']);
+            Route::post('/filter', [UserController::class, 'filter']);
+        });
     });
     Route::group(['prefix'=>'/agent', 'middleware'=>['role:admin|owner|agent']], function () {
         Route::get('/property/list', [PropertyController::class, 'getPaginateByAgent']);
