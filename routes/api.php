@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Area\AreaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
@@ -61,3 +62,13 @@ Route::get('/property/list', [PropertyController::class, 'getPaginate']);
 Route::get('/property/detail/id/{id}', [PropertyController::class, 'detail']);
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
 Route::get('/property/share/{url}', [PropertyController::class, 'share']);
+Route::group(['prefix'=>'/area'], function () {
+    Route::get('/provinsi', [AreaController::class, 'getProvinsi']);
+    Route::get('/provinsi/{id}/kota', [AreaController::class, 'getKota']);
+    Route::get('/provinsi/kota/{id}/kecamatan', [AreaController::class, 'getKecamatan']);
+    Route::group(['prefix'=>'/detail'], function () {
+        Route::get('/provinsi/id/{id}', [AreaController::class, 'provinsiDetail']);
+        Route::get('/kota/id/{id}', [AreaController::class, 'kotaDetail']);
+        Route::get('/kecamatan/id/{id}', [AreaController::class, 'kecamatanDetail']);
+    });
+});
