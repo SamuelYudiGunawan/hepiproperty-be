@@ -44,7 +44,7 @@ class PropertyController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'message' => $validator->errors()->first(),
+                'message' => $validator->errors()->messages(),
                 'status' => 'error'
             ], 400);
         }
@@ -112,7 +112,7 @@ class PropertyController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => $validator->errors()->first(),
+                'message' => $validator->errors()->messages(),
                 'status' => 'error'
             ], 400);
         }
