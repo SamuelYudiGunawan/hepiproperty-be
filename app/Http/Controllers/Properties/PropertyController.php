@@ -267,7 +267,7 @@ class PropertyController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'message' => $validator->errors()->first(),
+                'message' => $validator->errors()->messages(),
                 'status' => 'error'
             ], 400);
         }
@@ -308,8 +308,8 @@ class PropertyController extends Controller
         if($request->kecamatan_id){
             $property->where('kecamatan_id', $request->kecamatan_id);
         }
-        $get= $property->get();
-        if($get->count() > 0){
+        $get= $property->paginate(10);
+        if($get->total() > 0){
             return response()->json([
                 'message' => 'data found',
                 'status' => 'found',
