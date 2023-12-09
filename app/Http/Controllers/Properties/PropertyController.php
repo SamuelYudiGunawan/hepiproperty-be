@@ -212,7 +212,7 @@ class PropertyController extends Controller
 
     public function getPaginate(){
         try {
-            $property = Property::with('images', 'creator')->paginate(10, ['id','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id']);
+            $property = Property::with('images', 'creator')->paginate(10, ['id','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at']);
             if($property){
                 return response()->json([
                     'message' => 'data found',

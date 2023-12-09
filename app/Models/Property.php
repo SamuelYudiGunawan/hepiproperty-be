@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -35,6 +36,8 @@ class Property extends Model
         'agent_id'
     ];
 
+    protected $appends = [ 'date_deff', 'date' ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -53,5 +56,15 @@ class Property extends Model
     public function agents()
     {
         return $this->hasMany(AgentProperty::class);
+    }
+
+    public function getDateDeffAttribute()
+    {
+        return $this->created_at->locale('id')->longRelativeToNowDiffForHumans();
+    }
+
+    public function getDateAttribute()
+    {
+        return $this->created_at->format('d M Y');
     }
 }
