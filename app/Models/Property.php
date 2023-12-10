@@ -36,7 +36,7 @@ class Property extends Model
         'agent_id'
     ];
 
-    protected $appends = [ 'date_deff', 'date' ];
+    protected $appends = [ 'date_deff', 'date', 'path' ];
 
     public function user()
     {
@@ -66,5 +66,10 @@ class Property extends Model
     public function getDateAttribute()
     {
         return $this->created_at->format('d M Y');
+    }
+
+    public function getPathAttribute()
+    {
+        return route('user.property.detail', ['id' => $this->id]);
     }
 }
