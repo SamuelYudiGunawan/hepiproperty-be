@@ -59,7 +59,7 @@ Route::get('/token-invalid', function () {
     ], 400);
 })->name('login');
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
-Route::get('/property/detail/id/{id}', [PropertyController::class, 'detail']);
+Route::get('/property/detail/id/{id}', [PropertyController::class, 'detail'])->name('user.property.detail');
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
 Route::get('/property/share/{url}', [PropertyController::class, 'share']);
 Route::group(['prefix'=>'/area'], function () {
