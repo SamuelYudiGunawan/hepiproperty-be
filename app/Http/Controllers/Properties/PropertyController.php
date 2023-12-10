@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AgentProperty;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Jorenvh\Share\Share;
 
@@ -195,7 +196,8 @@ class PropertyController extends Controller
                 return response()->json([
                     'message' => 'data found',
                     'status' => 'found',
-                    'data' => $property
+                    'data' => $property,
+                    'path' => URL::current()
                 ], 200);
             }
             return response()->json([
