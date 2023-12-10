@@ -70,6 +70,6 @@ class Property extends Model
 
     public function getPathAttribute()
     {
-        return "property/detail/id/" . $this->id;
+        return "/property/detail/id/" . $this->id;
     }
 }
