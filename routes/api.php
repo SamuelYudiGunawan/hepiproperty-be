@@ -48,8 +48,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/update/id/{id}', [PropertyController::class, 'update']);
             Route::post('/delete/id/{id}', [PropertyController::class, 'delete']);
         });
-
     });
+
+    Route::post('/profile/update', [UserController::class, 'profileUpdate']);
 });
 
 Route::get('/token-invalid', function () {
