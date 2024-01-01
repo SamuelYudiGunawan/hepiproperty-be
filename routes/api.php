@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\Area\AreaController;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Foundation\Console\RouteListCommand;
 use App\Http\Controllers\Properties\PropertyController;
+use App\Http\Controllers\Article\ArticleController;
 use App\Http\Controllers\Listing\CreateListingController;
 use App\Http\Controllers\Listing\GetAllListingController;
 use App\Http\Controllers\Listing\UpdateListingController;
-use App\Http\Controllers\UserController;
-use App\Models\Property;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix'=>'/agent', 'middleware'=>['role:admin|owner|agent']], function () {
         Route::get('/property/list', [PropertyController::class, 'getPaginateByAgent']);
         Route::post('/property/filter', [PropertyController::class, 'agentPropertyFilter']);
+        Route::group(['prefix =>/article'], function () {
+            Route::post('/create', [ArticleController::class, 'create']);
+            Route::post('/update/id/{id}', [ArticleController::class, 'update']);
+            Route::post('/delete/id/{id}', [ArticleController::class, 'delete']);
+            Route::get('/list/user', [ArticleController::class, 'getPaginateByUser']);
+        });
     });
     Route::group(['prefix'=>'/property'], function () {
         Route::group(['middleware' => ['role:owner|admin|agent']], function () {
@@ -60,7 +67,7 @@ Route::get('/token-invalid', function () {
     ], 400);
 })->name('login');
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
-Route::get('/property/detail/id/{id}', [PropertyController::class, 'detail'])->name('user.property.detail');
+Route::get('/property/detail/slug/{slug}', [PropertyController::class, 'detail'])->name('user.property.detail');
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
 Route::get('/property/share/{url}', [PropertyController::class, 'share']);
 Route::group(['prefix'=>'/area'], function () {
@@ -73,3 +80,10 @@ Route::group(['prefix'=>'/area'], function () {
         Route::get('/kecamatan/id/{id}', [AreaController::class, 'kecamatanDetail']);
     });
 });
+
+Route::group(['user/agent'], function () {
+});
+
+Route::get('/list', [ArticleController::class, 'getPaginate']);
+Route::post('/filter', [ArticleController::class, 'filter']);
+

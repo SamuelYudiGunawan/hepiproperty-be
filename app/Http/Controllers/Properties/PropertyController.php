@@ -53,6 +53,13 @@ class PropertyController extends Controller
             'agent_id' => $request->user()->id
         ]);
 
+        $max_slug = Property::where('judul', $request->judul)->count();
+        $slug = Str::slug($request->judul . "-" . $max_slug, '-');
+
+        $request->merge([
+            'slug' => $slug
+        ]);
+
        
         try {
             DB::beginTransaction();
@@ -116,6 +123,14 @@ class PropertyController extends Controller
                 'message' => $validator->errors()->messages(),
                 'status' => 'error'
             ], 400);
+        }
+        
+        if ($request->judul && $request->judul != Property::find($id)->judul) {
+            $max_slug = Property::where('judul', $request->judul)->count();
+            $slug = Str::slug($request->judul . "-" . $max_slug, '-');
+            $request->merge([
+                'slug' => $slug
+            ]);
         }
 
         try {
@@ -189,9 +204,9 @@ class PropertyController extends Controller
         }
     }
 
-    public function detail($id){
+    public function detail($slug){
         try {
-            $property = Property::with('images', 'creator')->find($id);
+            $property = Property::with('images', 'creator')->where('slug', $slug)->first();
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -214,7 +229,7 @@ class PropertyController extends Controller
 
     public function getPaginate(){
         try {
-            $property = Property::with('images', 'creator')->paginate(10, ['id','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at']);
+            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at']);
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -256,7 +271,7 @@ class PropertyController extends Controller
         $validator = Validator::make($request->all(), [
             'kata_kunci' => 'string',
             'status' => 'string',
-            'tipe_properti' => 'string',
+            'tipe_properti' => 'array',
             'min_harga' => 'integer',
             'max_harga' => 'integer',
             'min_luas_tanah' => 'integer',
@@ -281,7 +296,7 @@ class PropertyController extends Controller
             $property->where('status', $request->status);
         }
         if($request->tipe_properti){
-            $property->where('tipe_properti', $request->tipe_properti);
+            $property->whereIn('tipe_properti', $request->tipe_properti);
         }
         if($request->min_harga){
             $property->where('harga', '>=', $request->min_harga);
@@ -310,7 +325,7 @@ class PropertyController extends Controller
         if($request->kecamatan_id){
             $property->where('kecamatan_id', $request->kecamatan_id);
         }
-        $get= $property->paginate(10);
+        $get= $property->with("images")->paginate(10);
         if($get->total() > 0){
             return response()->json([
                 'message' => 'data found',
