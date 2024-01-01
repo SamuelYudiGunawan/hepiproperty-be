@@ -33,7 +33,8 @@ class Property extends Model
         'posisi_rumah',
         'garasi_dan_carport',
         'kondisi_bangunan',
-        'agent_id'
+        'agent_id',
+        'slug'
     ];
 
     protected $appends = [ 'date_deff', 'date', 'path' ];
@@ -70,6 +71,6 @@ class Property extends Model
 
     public function getPathAttribute()
     {
-        return "/property/detail/id/" . $this->id;
+        return "/property/detail/slug/" . $this->slug;
     }
 }
