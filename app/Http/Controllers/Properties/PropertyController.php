@@ -325,7 +325,7 @@ class PropertyController extends Controller
         if($request->kecamatan_id){
             $property->where('kecamatan_id', $request->kecamatan_id);
         }
-        $get= $property->with("images")->paginate(10);
+        $get= $property->with("creator")->with("images")->paginate(10);
         if($get->total() > 0){
             return response()->json([
                 'message' => 'data found',
