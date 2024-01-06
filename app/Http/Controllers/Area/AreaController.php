@@ -93,4 +93,18 @@ class AreaController extends Controller
             'data' => $area
         ], 200);
     }
+
+    public function getSemarang(){
+        $area = Kecamatan::whereIn('kota_id', [209, 220])->get();
+        if (!$area) {
+            return response()->json([
+                'message' => 'data not found',
+                'data' => null
+            ], 400);
+        }
+        return response()->json([
+            'message' => 'success',
+            'data' => $area
+        ], 200);
+    }
 }

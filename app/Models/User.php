@@ -53,7 +53,12 @@ class User extends Authenticatable
             'name' => 'required',
             'email' => 'required|unique:users',
             'password' => 'required',
-        ]);
+            'password_confirmation' => 'required|same:password',
+        ],
+        [
+            "password_confirmation" => "Password confirmation doesn't match"
+        ]
+    );
 
         if ($validator->fails()) {
             return response()->json([

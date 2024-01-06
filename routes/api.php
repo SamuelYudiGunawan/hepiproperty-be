@@ -71,6 +71,7 @@ Route::get('/property/detail/slug/{slug}', [PropertyController::class, 'detail']
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
 Route::get('/property/share/{url}', [PropertyController::class, 'share']);
 Route::group(['prefix'=>'/area'], function () {
+    Route::get('/semarang', [AreaController::class, 'getSemarang']);
     Route::get('/provinsi', [AreaController::class, 'getProvinsi']);
     Route::get('/provinsi/{id}/kota', [AreaController::class, 'getKota']);
     Route::get('/provinsi/kota/{id}/kecamatan', [AreaController::class, 'getKecamatan']);
