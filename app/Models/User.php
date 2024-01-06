@@ -26,6 +26,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone_number',
     ];
 
     /**
@@ -47,22 +48,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function register ($request, string $role): \Illuminate\Http\JsonResponse
+    public function register ($request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|unique:users',
+            'role' => 'required|string|in:agent,admin',
             'password' => 'required',
             'password_confirmation' => 'required|same:password',
+            'phone_number' => 'required|string',
         ],
         [
-            "password_confirmation" => "Password confirmation doesn't match"
+            "password_confirmation" => "Password confirmation doesn't match",
+            "role.in" => "Role must be agent or admin"
         ]
     );
 
+        $role = $request->role;
+
         if ($validator->fails()) {
             return response()->json([
-                'message' => $validator->errors()->first(),
+                'message' => $validator->errors()->messages(),
                 'status' => 'error'
             ], 400);
         }
@@ -71,6 +77,7 @@ class User extends Authenticatable
             'name' => $request['name'],
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
+            'phone_number' => $request['phone_number'],
         ]);
 
         if($role == 'agent'){

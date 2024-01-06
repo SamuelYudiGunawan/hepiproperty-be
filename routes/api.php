@@ -32,7 +32,7 @@ Route::group(['prefix'=>'/auth'], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix'=>'/admin', 'middleware'=>['role:admin|owner']], function () {
         Route::group(['prefix'=>'/user'], function () {
-            Route::post('/create/{role}', [AuthController::class, 'register']);
+            Route::post('/create', [AuthController::class, 'register']);
             Route::post('/update/id/{id}', [UserController::class, 'update']);
             Route::post('/delete/id/{id}', [UserController::class, 'delete']);
             Route::get('/list', [UserController::class, 'getPaginate']);
