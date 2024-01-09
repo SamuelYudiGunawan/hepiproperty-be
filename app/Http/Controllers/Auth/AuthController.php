@@ -46,10 +46,10 @@ class AuthController extends Controller
         ],200);
     }
 
-    public function Register (Request $request, string $role): \Illuminate\Http\JsonResponse
+    public function Register (Request $request): \Illuminate\Http\JsonResponse
     {
         $user = new User;
-        return $user->register($request, $role);
+        return $user->register($request);
     }
 
     public function logout(Request $request): \Illuminate\Http\JsonResponse

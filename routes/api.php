@@ -1,15 +1,17 @@
 <?php
 
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Foundation\Console\RouteListCommand;
 use App\Http\Controllers\Properties\PropertyController;
+use App\Http\Controllers\Article\ArticleController;
 use App\Http\Controllers\Listing\CreateListingController;
 use App\Http\Controllers\Listing\GetAllListingController;
 use App\Http\Controllers\Listing\UpdateListingController;
-use App\Http\Controllers\UserController;
-use App\Models\Property;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +32,7 @@ Route::group(['prefix'=>'/auth'], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix'=>'/admin', 'middleware'=>['role:admin|owner']], function () {
         Route::group(['prefix'=>'/user'], function () {
-            Route::post('/create/{role}', [AuthController::class, 'register']);
+            Route::post('/create', [AuthController::class, 'register']);
             Route::post('/update/id/{id}', [UserController::class, 'update']);
             Route::post('/delete/id/{id}', [UserController::class, 'delete']);
             Route::get('/list', [UserController::class, 'getPaginate']);
@@ -40,6 +42,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix'=>'/agent', 'middleware'=>['role:admin|owner|agent']], function () {
         Route::get('/property/list', [PropertyController::class, 'getPaginateByAgent']);
         Route::post('/property/filter', [PropertyController::class, 'agentPropertyFilter']);
+        Route::group(['prefix =>/article'], function () {
+            Route::post('/create', [ArticleController::class, 'create']);
+            Route::post('/update/id/{id}', [ArticleController::class, 'update']);
+            Route::post('/delete/id/{id}', [ArticleController::class, 'delete']);
+            Route::get('/list/user', [ArticleController::class, 'getPaginateByUser']);
+        });
     });
     Route::group(['prefix'=>'/property'], function () {
         Route::group(['middleware' => ['role:owner|admin|agent']], function () {
@@ -47,8 +55,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/update/id/{id}', [PropertyController::class, 'update']);
             Route::post('/delete/id/{id}', [PropertyController::class, 'delete']);
         });
-
     });
+
+    Route::post('/profile/update', [UserController::class, 'profileUpdate']);
 });
 
 Route::get('/token-invalid', function () {
@@ -58,6 +67,24 @@ Route::get('/token-invalid', function () {
     ], 400);
 })->name('login');
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
-Route::get('/property/detail/id/{id}', [PropertyController::class, 'detail']);
+Route::get('/property/detail/slug/{slug}', [PropertyController::class, 'detail'])->name('user.property.detail');
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
 Route::get('/property/share/{url}', [PropertyController::class, 'share']);
+Route::group(['prefix'=>'/area'], function () {
+    Route::get('/semarang', [AreaController::class, 'getSemarang']);
+    Route::get('/provinsi', [AreaController::class, 'getProvinsi']);
+    Route::get('/provinsi/{id}/kota', [AreaController::class, 'getKota']);
+    Route::get('/provinsi/kota/{id}/kecamatan', [AreaController::class, 'getKecamatan']);
+    Route::group(['prefix'=>'/detail'], function () {
+        Route::get('/provinsi/id/{id}', [AreaController::class, 'provinsiDetail']);
+        Route::get('/kota/id/{id}', [AreaController::class, 'kotaDetail']);
+        Route::get('/kecamatan/id/{id}', [AreaController::class, 'kecamatanDetail']);
+    });
+});
+
+Route::group(['user/agent'], function () {
+});
+
+Route::get('/list', [ArticleController::class, 'getPaginate']);
+Route::post('/filter', [ArticleController::class, 'filter']);
+

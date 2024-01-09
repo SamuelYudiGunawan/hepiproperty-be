@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -32,8 +33,11 @@ class Property extends Model
         'posisi_rumah',
         'garasi_dan_carport',
         'kondisi_bangunan',
-        'agent_id'
+        'agent_id',
+        'slug'
     ];
+
+    protected $appends = [ 'date_deff', 'date', 'path' ];
 
     public function user()
     {
@@ -53,5 +57,20 @@ class Property extends Model
     public function agents()
     {
         return $this->hasMany(AgentProperty::class);
+    }
+
+    public function getDateDeffAttribute()
+    {
+        return $this->created_at->locale('id')->longRelativeToNowDiffForHumans();
+    }
+
+    public function getDateAttribute()
+    {
+        return $this->created_at->format('d M Y');
+    }
+
+    public function getPathAttribute()
+    {
+        return "/property/detail/slug/" . $this->slug;
     }
 }
