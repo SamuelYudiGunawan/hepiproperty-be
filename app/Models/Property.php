@@ -61,12 +61,16 @@ class Property extends Model
 
     public function getDateDeffAttribute()
     {
+        if($this->created_at){
         return $this->created_at->locale('id')->longRelativeToNowDiffForHumans();
+        }
     }
 
     public function getDateAttribute()
     {
+        if($this->created_at){
         return $this->created_at->format('d M Y');
+        }
     }
 
     public function getPathAttribute()

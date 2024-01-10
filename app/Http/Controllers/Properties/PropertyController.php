@@ -229,7 +229,7 @@ class PropertyController extends Controller
 
     public function getPaginate(){
         try {
-            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at']);
+            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -251,7 +251,7 @@ class PropertyController extends Controller
 
     public function getPaginateByAgent(Request $request){
         try {
-            $property = AgentProperty::where('agent_id', $request->user()->id)->with('data:id,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id', 'data.creator')->paginate(10);
+            $property = AgentProperty::where('agent_id', $request->user()->id)->with('data:id,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,area,created_at', 'data.creator')->paginate(10);
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -260,10 +260,7 @@ class PropertyController extends Controller
                 ], 200);
             }
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'error when getting data',
-                'status' => 'error'
-            ], 400);
+            return $th;
         }
     }
 
