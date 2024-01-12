@@ -124,6 +124,13 @@ class PropertyController extends Controller
                 'status' => 'error'
             ], 400);
         }
+
+        if(Property::find($id)){
+            return response()->json([
+                'message' => 'data not found',
+                'status' => 'error'
+            ], 404);
+        }
         
         if ($request->judul && $request->judul != Property::find($id)->judul) {
             $max_slug = Property::where('judul', $request->judul)->count();
@@ -132,7 +139,6 @@ class PropertyController extends Controller
                 'slug' => $slug
             ]);
         }
-
         try {
             DB::beginTransaction();
             $property = Property::find($id);
