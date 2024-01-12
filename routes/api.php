@@ -53,6 +53,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::group(['middleware' => ['role:owner|admin|agent']], function () {
             Route::post('/create', [PropertyController::class, 'create']);
             Route::post('/update/id/{id}', [PropertyController::class, 'update']);
+            Route::post('/update/id/{id}/with-image-id', [PropertyController::class, 'updateWithImageId']);
             Route::post('/delete/id/{id}', [PropertyController::class, 'delete']);
         });
     });
