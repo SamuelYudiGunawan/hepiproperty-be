@@ -124,6 +124,13 @@ class PropertyController extends Controller
                 'status' => 'error'
             ], 400);
         }
+
+        if(Property::find($id)){
+            return response()->json([
+                'message' => 'data not found',
+                'status' => 'error'
+            ], 404);
+        }
         
         if ($request->judul && $request->judul != Property::find($id)->judul) {
             $max_slug = Property::where('judul', $request->judul)->count();
@@ -132,7 +139,6 @@ class PropertyController extends Controller
                 'slug' => $slug
             ]);
         }
-
         try {
             DB::beginTransaction();
             $property = Property::find($id);
@@ -160,6 +166,97 @@ class PropertyController extends Controller
                     'status' => 'updated'
                 ], 200);
             }
+            return response()->json([
+                'message' => 'data not found',
+                'status' => 'error'
+            ], 404);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'error when updating data',
+                'status' => 'error'
+            ], 400);
+        }
+    }
+
+    public function updateWithImageID(Request $request, $id) {
+        $validator = Validator::make($request->all(), [
+            'judul' => 'string',
+            'status' => 'string',
+            'tipe_properti' => 'string',
+            'deskripsi' => 'string',
+            'harga' => 'integer',
+            'area' => 'string',
+            'provinsi_id' => 'integer',
+            'kota_id' => 'integer',
+            'kecamatan_id' => 'integer',
+            'luas_tanah' => 'integer',
+            'luas_bangunan' => 'integer',
+            'kamar_tidur' => 'integer',
+            'kamar_mandi' => 'integer',
+            'kamar_tidur_pembantu' => 'integer',
+            'kamar_mandi_pembantu' => 'integer',
+            'listrik' => 'integer',
+            'air' => 'string',
+            'sertifikat' => 'string',
+            'posisi_rumah' => 'string',
+            'garasi_dan_carport' => 'integer',
+            'kondisi_bangunan' => 'string',
+            'images' => 'array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image_id' => 'array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->messages(),
+                'status' => 'error'
+            ], 400);
+        }
+        
+        if(!Property::find($id)){
+            return response()->json([
+                'message' => 'data not found',
+                'status' => 'error'
+            ], 404);
+        }
+        
+        if ($request->judul && $request->judul != Property::find($id)->judul) {
+            $max_slug = Property::where('judul', $request->judul)->count();
+            $slug = Str::slug($request->judul . "-" . $max_slug, '-');
+            $request->merge([
+                'slug' => $slug
+            ]);
+        }
+        try {
+            DB::beginTransaction();
+            $property = Property::find($id);
+            $agent_property = AgentProperty::where('property_id', $id)->get();
+            $is_in_array = in_array($request->user()->id, $agent_property->pluck('agent_id')->toArray());
+            if($is_in_array ||  $request->user()->hasRole(['admin','owner'])){
+                $property->update($request->except('images'));
+                if($request->image_id){
+                    $data_image = PropertyImage::whereIn('id', $request->image_id)->get();
+                    foreach ($data_image as $key => $value) {
+                        Storage::disk('public')->delete($value->image_url);
+                    }
+                    $data_image->each->delete();
+                }
+                if($request->hasFile('images')){
+                    foreach ($request->file('images') as $key => $value) {
+                        $image_name[] = [
+                            'property_id' => $property->id,
+                            'image_url' => Storage::disk('public')->put('images', $value)
+                        ];
+                    }
+                    PropertyImage::insert($image_name);
+                }
+                DB::commit();
+                return response()->json([
+                    'message' => 'data updated',
+                    'status' => 'updated'
+                ], 200);
+            }   
             return response()->json([
                 'message' => 'data not found',
                 'status' => 'error'
@@ -229,7 +326,7 @@ class PropertyController extends Controller
 
     public function getPaginate(){
         try {
-            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at']);
+            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -251,7 +348,7 @@ class PropertyController extends Controller
 
     public function getPaginateByAgent(Request $request){
         try {
-            $property = AgentProperty::where('agent_id', $request->user()->id)->with('data:id,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id', 'data.creator')->paginate(10);
+            $property = AgentProperty::where('agent_id', $request->user()->id)->with('data:id,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,area,created_at', 'data.creator')->paginate(10);
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -260,10 +357,7 @@ class PropertyController extends Controller
                 ], 200);
             }
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'error when getting data',
-                'status' => 'error'
-            ], 400);
+            return $th;
         }
     }
 
