@@ -9,6 +9,7 @@ use App\Models\PropertyImage;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\AgentProperty;
+use App\Models\PropertyUnggulan;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -518,6 +519,44 @@ class PropertyController extends Controller
             'message' => 'share link',
             'status' => 'found',
             'data' => $link
+        ], 200);
+    }
+
+    public function addToUnggulan(Request $request, $id){
+       PropertyUnggulan::create([
+           'property_id' => $id
+       ]);
+
+       return response()->json([
+           'message' => 'data added to unggulan',
+           'status' => 'added'
+       ], 201);
+    }
+
+    public function removeFromUnggulan(Request $request, $id){
+        PropertyUnggulan::destroy($id);
+
+        return response()->json([
+            'message' => 'data removed from unggulan',
+            'status' => 'removed'
+        ], 200);
+    }
+
+    public function getUnggulan(){
+        $property = PropertyUnggulan::with('data:id,slug,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,created_at,area')->paginate(10);
+        return response()->json([
+            'message' => 'data found',
+            'status' => 'found',
+            'data' => $property
+        ], 200);
+    }
+
+    public function getNewest(){
+        $property = Property::with('images', 'creator')->orderBy('created_at', 'desc')->paginate(6, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
+        return response()->json([
+            'message' => 'data found',
+            'status' => 'found',
+            'data' => $property
         ], 200);
     }
 }

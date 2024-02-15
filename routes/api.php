@@ -55,6 +55,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/update/id/{id}', [PropertyController::class, 'update']);
             Route::post('/update/id/{id}/with-image-id', [PropertyController::class, 'updateWithImageId']);
             Route::post('/delete/id/{id}', [PropertyController::class, 'delete']);
+            Route::post('/add-to-unggulan/id/{id}', [PropertyController::class, 'addToUnggulan']);
+            Route::post('/remove-from-unggulan/id/{id}', [PropertyController::class, 'removeFromUnggulan']);
         });
     });
 
@@ -68,6 +70,8 @@ Route::get('/token-invalid', function () {
     ], 400);
 })->name('login');
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
+Route::get('/property/unggulan', [PropertyController::class, 'getUnggulan']);
+Route::get('/property/newest', [PropertyController::class, 'getNewest']);
 Route::get('/property/detail/slug/{slug}', [PropertyController::class, 'detail'])->name('user.property.detail');
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
 Route::get('/property/share/{url}', [PropertyController::class, 'share']);
