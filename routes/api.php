@@ -71,6 +71,7 @@ Route::get('/token-invalid', function () {
 })->name('login');
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
 Route::get('/property/unggulan', [PropertyController::class, 'getUnggulan']);
+Route::get('/property/newest', [PropertyController::class, 'getNewest']);
 Route::get('/property/detail/slug/{slug}', [PropertyController::class, 'detail'])->name('user.property.detail');
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
 Route::get('/property/share/{url}', [PropertyController::class, 'share']);

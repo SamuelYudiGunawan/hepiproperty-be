@@ -550,4 +550,13 @@ class PropertyController extends Controller
             'data' => $property
         ], 200);
     }
+
+    public function getNewest(){
+        $property = Property::with('images', 'creator')->orderBy('created_at', 'desc')->paginate(6, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
+        return response()->json([
+            'message' => 'data found',
+            'status' => 'found',
+            'data' => $property
+        ], 200);
+    }
 }
