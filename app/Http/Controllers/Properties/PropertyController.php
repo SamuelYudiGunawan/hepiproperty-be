@@ -379,6 +379,7 @@ class PropertyController extends Controller
             'provinsi_id' => 'integer',
             'kota_id' => 'integer',
             'kecamatan_id' => 'integer',
+            'is_unggulan' => 'boolean'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -423,7 +424,12 @@ class PropertyController extends Controller
         if($request->kecamatan_id){
             $property->where('kecamatan_id', $request->kecamatan_id);
         }
+
+        if($request->is_unggulan){
+            $property->has('unggulan');
+        }
         $get= $property->with("creator")->with("images")->paginate(10);
+        // dd($property->toSql());
         if($get->total() > 0){
             return response()->json([
                 'message' => 'data found',
@@ -458,6 +464,7 @@ class PropertyController extends Controller
                 'status' => 'error'
             ], 400);
         }
+
         $data = AgentProperty::where('agent_id', $request->user()->id)->whereHas('data' , function($property) use ($request){
             if($request->kata_kunci){
                 $property->where('judul', 'like', '%'.$request->kata_kunci.'%');
