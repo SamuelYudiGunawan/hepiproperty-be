@@ -546,7 +546,7 @@ class PropertyController extends Controller
     }
 
     public function getUnggulan(){
-        $property = PropertyUnggulan::with('data:id,slug,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,created_at,area')->paginate(10);
+        $property = PropertyUnggulan::with('data:id,slug,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,created_at,area', 'data.creator')->paginate(6);
         return response()->json([
             'message' => 'data found',
             'status' => 'found',
