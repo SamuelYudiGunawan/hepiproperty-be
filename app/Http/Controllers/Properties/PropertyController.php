@@ -306,10 +306,13 @@ class PropertyController extends Controller
         try {
             $property = Property::with('images', 'creator')->where('slug', $slug)->first();
             if($property){
+                $propertyUnggulan = PropertyUnggulan::where('property_id', $property->id)->first();
+                $boolunggulan = $propertyUnggulan ? true : false;
                 return response()->json([
                     'message' => 'data found',
                     'status' => 'found',
                     'data' => $property,
+                    'is_unggulan' => $boolunggulan,
                     'path' => URL::current()
                 ], 200);
             }
