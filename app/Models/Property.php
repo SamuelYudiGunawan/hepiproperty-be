@@ -59,6 +59,11 @@ class Property extends Model
         return $this->hasMany(AgentProperty::class);
     }
 
+    public function unggulan()
+    {
+        return $this->hasOne(PropertyUnggulan::class, 'property_id', 'id');
+    }
+
     public function getDateDeffAttribute()
     {
         if($this->created_at){
