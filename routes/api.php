@@ -6,12 +6,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Article\ArticleController;
 use Illuminate\Foundation\Console\RouteListCommand;
 use App\Http\Controllers\Properties\PropertyController;
-use App\Http\Controllers\Article\ArticleController;
 use App\Http\Controllers\Listing\CreateListingController;
 use App\Http\Controllers\Listing\GetAllListingController;
 use App\Http\Controllers\Listing\UpdateListingController;
+use App\Http\Controllers\Properties\PropertyUnggulanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,8 +56,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/update/id/{id}', [PropertyController::class, 'update']);
             Route::post('/update/id/{id}/with-image-id', [PropertyController::class, 'updateWithImageId']);
             Route::post('/delete/id/{id}', [PropertyController::class, 'delete']);
-            Route::post('/add-to-unggulan/id/{id}', [PropertyController::class, 'addToUnggulan']);
-            Route::post('/remove-from-unggulan/id/{id}', [PropertyController::class, 'removeFromUnggulan']);
+            Route::post('/add-to-unggulan/id/{id}', [PropertyUnggulanController::class, 'addToUnggulan']);
+            Route::post('/remove-from-unggulan/id/{id}', [PropertyUnggulanController::class, 'removeFromUnggulan']);
+            Route::post('/set-highlight/id/{id}', [PropertyUnggulanController::class, 'setHighlight']);
+            Route::post('/remove-highlight/id/{id}', [PropertyUnggulanController::class, 'removeHighlight']);
         });
     });
 
@@ -70,7 +73,10 @@ Route::get('/token-invalid', function () {
     ], 400);
 })->name('login');
 Route::get('/property/list', [PropertyController::class, 'getPaginate']);
-Route::get('/property/unggulan', [PropertyController::class, 'getUnggulan']);
+Route::group(['prefix'=>'/property'], function () {
+    Route::get('/unggulan', [PropertyUnggulanController::class, 'getUnggulan']);
+    Route::get('/unggulan/highlight', [PropertyUnggulanController::class, 'getHighlight']);
+});
 Route::get('/property/newest', [PropertyController::class, 'getNewest']);
 Route::get('/property/detail/slug/{slug}', [PropertyController::class, 'detail'])->name('user.property.detail');
 Route::post('/property/filter', [PropertyController::class, 'searchFilter']);
