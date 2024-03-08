@@ -37,7 +37,7 @@ class Property extends Model
         'slug'
     ];
 
-    protected $appends = [ 'date_deff', 'date', 'path' ];
+    protected $appends = [ 'date_deff', 'date', 'path', 'is_highlighted' ];
 
     public function user()
     {
@@ -62,6 +62,14 @@ class Property extends Model
     public function unggulan()
     {
         return $this->hasOne(PropertyUnggulan::class, 'property_id', 'id');
+    }
+
+    public function GetIsHighlightedAttribute()
+    {
+        if($this->unggulan){
+            return $this->unggulan->highlight;
+        }
+        return false;
     }
 
     public function getDateDeffAttribute()

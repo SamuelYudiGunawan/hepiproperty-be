@@ -59,7 +59,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/add-to-unggulan/id/{id}', [PropertyUnggulanController::class, 'addToUnggulan']);
             Route::post('/remove-from-unggulan/id/{id}', [PropertyUnggulanController::class, 'removeFromUnggulan']);
             Route::post('/set-highlight/id/{id}', [PropertyUnggulanController::class, 'setHighlight']);
-            Route::post('/remove-highlight/id/{id}', [PropertyUnggulanController::class, 'removeHighlight']);
+            Route::post('/remove-highlight/id/{id}', [PropertyUnggulanController::class, 'removeH   ighlight']);
         });
     });
 
