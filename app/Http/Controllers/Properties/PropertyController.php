@@ -330,7 +330,8 @@ class PropertyController extends Controller
 
     public function getPaginate(){
         try {
-            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
+            $property = Property::with('images', 'creator')->with('unggulan:property_id,highlight')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
+            // dd($property);
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -379,7 +380,8 @@ class PropertyController extends Controller
             'provinsi_id' => 'integer',
             'kota_id' => 'integer',
             'kecamatan_id' => 'integer',
-            'is_unggulan' => 'boolean'
+            'is_unggulan' => 'boolean',
+            'is_highlight' => 'boolean'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -427,6 +429,12 @@ class PropertyController extends Controller
 
         if($request->is_unggulan){
             $property->has('unggulan');
+        }
+
+        if($request->is_highlight){
+            $property->whereHas('unggulan', function(Builder $query){
+                $query->where('highlight', 1);
+            });
         }
         $get= $property->with("creator")->with("images")->paginate(10);
         // dd($property->toSql());

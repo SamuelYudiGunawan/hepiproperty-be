@@ -20,7 +20,7 @@ class PropertyUnggulanController extends Controller
      }
  
      public function removeFromUnggulan(Request $request, $id){
-         PropertyUnggulan::destroy($id);
+         PropertyUnggulan::where('property_id', $id)->delete();
  
          return response()->json([
              'message' => 'data removed from unggulan',
@@ -29,7 +29,7 @@ class PropertyUnggulanController extends Controller
      }
  
      public function getUnggulan(){
-         $property = PropertyUnggulan::with('data:id,slug,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,created_at,area', 'data.creator')->paginate(6);
+         $property = PropertyUnggulan::with('data:id,slug,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,created_at,area', 'data.creator', 'data.images')->paginate(6);
          return response()->json([
              'message' => 'data found',
              'status' => 'found',
@@ -38,7 +38,7 @@ class PropertyUnggulanController extends Controller
      }
 
      public function getHighlight(){
-        $property = PropertyUnggulan::where('highlight', 1)->with('data:id,slug,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,created_at,area', 'data.creator')->get();
+        $property = PropertyUnggulan::where('highlight', 1)->with('data:id,slug,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,created_at,area', 'data.creator', 'data.images')->get();
         return response()->json([
             'message' => 'data found',
             'status' => 'found',
