@@ -330,7 +330,7 @@ class PropertyController extends Controller
 
     public function getPaginate(){
         try {
-            $property = Property::with('images', 'creator')->with('unggulan:property_id,highlight')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
+            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
             // dd($property);
             if($property){
                 return response()->json([
@@ -345,7 +345,7 @@ class PropertyController extends Controller
             ], 404);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'error when getting data',
+                'message' => $th->getMessage(),
                 'status' => 'error'
             ], 400);
         }
