@@ -64,6 +64,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::post('/profile/update', [UserController::class, 'profileUpdate']);
+    Route::get('/profile/detail', [UserController::class, 'profileDetail']);
 });
 
 Route::get('/token-invalid', function () {

@@ -99,21 +99,21 @@ class UserController extends Controller
     }
 
     public function profileUpdate(Request $request){
-        $validator = Validator::make($request->all(), [
-            'name' => 'string',
-            'email' => 'string|unique:users',
-            'phone_number' => 'string',
-            'old_password' => 'current_password|required_with:new_password',
-            'new_password' => 'string|confirmed',
-            'new password_confirmation' => 'string',
-            'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ],
-        [
-            'new_password.confirmed' => 'confirmed password not match',
-            'required_with' => 'Password required',
-            'old_password.current_password' => 'Old password not match'
-        ]
-    );
+            $validator = Validator::make($request->all(), [
+                'name' => 'string',
+                'email' => 'string|unique:users',
+                'phone_number' => 'string',
+                'old_password' => 'current_password|required_with:new_password',
+                'new_password' => 'string|confirmed',
+                'new password_confirmation' => 'string',
+                'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ],
+            [
+                'new_password.confirmed' => 'confirmed password not match',
+                'required_with' => 'Password required',
+                'old_password.current_password' => 'Old password not match'
+            ]
+        );
         if ($validator->fails()) {
             return response()->json([
                 'message' => $validator->errors()->messages(),
@@ -162,5 +162,20 @@ class UserController extends Controller
                 'status' => 'error'
             ], 502);
         }
+    }
+
+    public function profileDetail(Request $request) {
+        $user = User::find(Auth::user()->id);
+        if(!$user){
+            return response()->json([
+                'message' => 'User not found',
+                'status' => 'error'
+            ], 400);
+        }
+        return response()->json([
+            'message' => 'User found',
+            'status' => 'success',
+            'data' => $user
+        ], 200);
     }
 }
