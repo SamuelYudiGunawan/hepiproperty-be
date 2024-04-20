@@ -3,23 +3,65 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Property;
 use Illuminate\Http\Request;
+use Illuminate\Support\MessageBag;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\MessageBag;
 
 class UserController extends Controller
 {
     public function getPaginate(Request $request)
     {
-        $users = User::paginate(10);
+        $users = User::with('roles')->paginate(10, ['id','name', 'email']);
         return response()->json([
             'message' => 'success',
             'status' => 'success',
             'data' => $users
+        ], 200);
+    }
+
+    public function detailById(Request $request, $id)
+    {
+        $user = User::with('roles')->find($id);
+        $property = Property::where('agent_id', $id)->get();
+        if(!$property){
+            return response()->json([
+                'message' => 'User found',
+                'status' => 'success',
+                'data' => $user,
+                'listing' => 0,
+                'dijual' => 0,
+                'disewa' => 0
+            ], 200);
+        }
+        $grouped = array_reduce(
+            $property->toArray(),
+            function ($carry, $item) {
+                $carry[$item['status']][] = $item;
+                return $carry;
+            },
+            []
+        );
+        $property_count = count($property);
+        $dijual = count($grouped['dijual']);
+        $disewa = count($grouped['disewakan']);
+        if(!$user){
+            return response()->json([
+                'message' => 'User not found',
+                'status' => 'error'
+            ], 400);
+        }
+        return response()->json([
+            'message' => 'User found',
+            'status' => 'success',
+            'data' => $user,
+            'listing' => $property_count,
+            'dijual' => $dijual,
+            'disewa' => $disewa
         ], 200);
     }
 
@@ -98,7 +140,7 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function profileUpdate(Request $request){
+    public function selfProfileUpdate(Request $request){
             $validator = Validator::make($request->all(), [
                 'name' => 'string',
                 'email' => 'string|unique:users',
@@ -164,8 +206,30 @@ class UserController extends Controller
         }
     }
 
-    public function profileDetail(Request $request) {
-        $user = User::find(Auth::user()->id);
+    public function selfProfileDetail(Request $request) {
+        $user = User::with('roles')->find(Auth::user()->id);
+        $property = Property::where('agent_id', $user->id)->get();
+        if(!$property){
+            return response()->json([
+                'message' => 'User found',
+                'status' => 'success',
+                'data' => $user,
+                'listing' => 0,
+                'dijual' => 0,
+                'disewa' => 0
+            ], 200);
+        }
+        $grouped = array_reduce(
+            $property->toArray(),
+            function ($carry, $item) {
+                $carry[$item['status']][] = $item;
+                return $carry;
+            },
+            []
+        );
+        $property_count = count($property);
+        $dijual = count($grouped['dijual']);
+        $disewa = count($grouped['disewakan']);
         if(!$user){
             return response()->json([
                 'message' => 'User not found',
@@ -175,7 +239,10 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User found',
             'status' => 'success',
-            'data' => $user
+            'data' => $user,
+            'listing' => $property_count,
+            'dijual' => $dijual,
+            'disewa' => $disewa
         ], 200);
     }
 }

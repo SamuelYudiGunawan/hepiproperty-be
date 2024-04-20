@@ -37,6 +37,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/update/id/{id}', [UserController::class, 'update']);
             Route::post('/delete/id/{id}', [UserController::class, 'delete']);
             Route::get('/list', [UserController::class, 'getPaginate']);
+            Route::get('/detail/id/{id}', [UserController::class, 'detailById']);
             Route::post('/filter', [UserController::class, 'filter']);
         });
     });
@@ -63,8 +64,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         });
     });
 
-    Route::post('/profile/update', [UserController::class, 'profileUpdate']);
-    Route::get('/profile/detail', [UserController::class, 'profileDetail']);
+    Route::post('/profile/update', [UserController::class, 'selfProfileUpdate']);
+    Route::get('/profile/detail', [UserController::class, 'selfProfileDetail']);
 });
 
 Route::get('/token-invalid', function () {
