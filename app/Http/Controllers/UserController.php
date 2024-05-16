@@ -35,16 +35,6 @@ class UserController extends Controller
             ], 400);
         }
         $property = Property::where('agent_id', $id)->get();
-        // if($property->isEmpty()){
-        //     return response()->json([
-        //         'message' => 'User found',
-        //         'status' => 'success',
-        //         'data' => $user,
-        //         'listing' => 0,
-        //         'dijual' => 0,
-        //         'disewa' => 0
-        //     ], 200);
-        // }
         $grouped = array_reduce(
             $property->toArray(),
             function ($carry, $item) {
@@ -256,8 +246,16 @@ class UserController extends Controller
             []
         );
         $property_count = count($property);
-        $dijual = count($grouped['dijual']);
-        $disewa = count($grouped['disewakan']);
+        if(!array_key_exists('dijual', $grouped)){
+            $dijual = 0;
+        } else {
+            $dijual = count($grouped['dijual']);
+        }
+        if(!array_key_exists('disewakan', $grouped)){
+            $disewa = 0;
+        } else {
+            $disewa = count($grouped['disewakan']);
+        }
         if(!$user){
             return response()->json([
                 'message' => 'User not found',
