@@ -85,9 +85,10 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string',
-            'email' => 'string|unique:users',
+            'email' => 'string',
             'password' => 'string',
-            'role' => 'string'
+            'role' => 'string',
+            'phone_number' => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -102,8 +103,19 @@ class UserController extends Controller
                 'status' => 'error'
             ], 400);
         }
-        $password = Hash::make($request->password);
-        $request->merge(['password' => $password]);
+        if($request->name){
+            $request->merge(['name' => $request->name]);
+        }
+        if($request->email){
+            $request->merge(['email' => $request->email]);
+        }
+        if($request->password){
+            $password = Hash::make($request->password);
+            $request->merge(['password' => $password]);
+        }
+        if($request->phone_number){
+            $request->merge(['phone_number' => $request->phone_number]);
+        }
         $user->update($request->all());
         if($request->role){
             $user->syncRoles($request->role);
