@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Agent\AgentController;
 use App\Http\Controllers\Article\ArticleController;
 use Illuminate\Foundation\Console\RouteListCommand;
 use App\Http\Controllers\Properties\PropertyController;
@@ -95,7 +96,10 @@ Route::group(['prefix'=>'/area'], function () {
     });
 });
 
-Route::group(['user/agent'], function () {
+Route::group(['prefix'=> 'user/agent'], function () {
+    Route::get('list', [AgentController::class, 'list']);
+    Route::get('detail/{id}', [AgentController::class, 'detail']);
+    Route::get('property/{id}', [AgentController::class, 'agentProperty']);
 });
 
 Route::get('/list', [ArticleController::class, 'getPaginate']);
