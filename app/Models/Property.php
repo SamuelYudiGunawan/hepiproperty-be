@@ -64,6 +64,21 @@ class Property extends Model
         return $this->hasOne(PropertyUnggulan::class, 'property_id', 'id');
     }
 
+    public function provinsi()
+    {
+        return $this->belongsTo(Provinsi::class);
+    }
+
+    public function kota()
+    {
+        return $this->belongsTo(Kota::class);
+    }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(Kecamatan::class);
+    }
+
     public function GetIsHighlightedAttribute()
     {
         if($this->unggulan){
