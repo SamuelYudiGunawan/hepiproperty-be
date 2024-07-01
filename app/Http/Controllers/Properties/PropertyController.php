@@ -510,7 +510,7 @@ class PropertyController extends Controller
             if($request->kecamatan_id){
                 $property->where('kecamatan_id', $request->kecamatan_id);
             }
-        })->with('data')->get('property_id');
+        })->with('data', 'data.images')->get('property_id');
         if($data->count() > 0){
             return response()->json([
                 'message' => 'data found',
