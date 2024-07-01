@@ -96,6 +96,17 @@ Route::group(['prefix'=>'/area'], function () {
     });
 });
 
+Route::group(['prefix'=>'/article'], function () {
+    Route::get('/list', [ArticleController::class, 'list']);
+    Route::get('/detail/slug/{slug}', [ArticleController::class, 'detail']);
+    Route::group(['middleware' => ['role:owner|admin|agent', 'auth:sanctum']], function () {
+        Route::post('/create', [ArticleController::class, 'create']);
+        Route::post('/update/id/{id}', [ArticleController::class, 'update']);
+        Route::post('/delete/id/{id}', [ArticleController::class, 'delete']);
+    });
+    
+});
+
 Route::group(['prefix'=> 'user/agent'], function () {
     Route::get('list', [AgentController::class, 'list']);
     Route::get('detail/{id}', [AgentController::class, 'detail']);

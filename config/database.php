@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Str;
+use Illuminate\Database\DBAL\TimestampType;
 
 return [
 
@@ -107,7 +108,11 @@ return [
     */
 
     'migrations' => 'migrations',
-
+    'dbal' => [
+        'types' => [
+            'timestamp' => TimestampType::class,
+        ],
+    ],
     /*
     |--------------------------------------------------------------------------
     | Redis Databases

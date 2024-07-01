@@ -304,7 +304,7 @@ class PropertyController extends Controller
 
     public function detail($slug){
         try {
-            $property = Property::with('images', 'creator')->where('slug', $slug)->first();
+            $property = Property::with('images', 'creator', 'kota', 'kecamatan', 'provinsi')->where('slug', $slug)->first();
             if($property){
                 $propertyUnggulan = PropertyUnggulan::where('property_id', $property->id)->first();
                 $boolunggulan = $propertyUnggulan ? true : false;
