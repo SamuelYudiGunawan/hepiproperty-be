@@ -21,7 +21,7 @@ class PropertyController extends Controller
     public function create(Request $request){
         $validator = Validator::make($request->all(), [
             'judul' => 'required|string',
-            'status' => 'required|string',
+            'status' => 'required|string|in:dijual,disewakan',
             'tipe_properti' => 'required|string',
             'deskripsi' => 'required|string',
             'harga' => 'required|integer',
@@ -43,10 +43,15 @@ class PropertyController extends Controller
             'kondisi_bangunan' => 'string',
             'images' => 'array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
+        ],
+
+       [ // message for validation status
+        "status.in" => "status must be dijual or disewakan",
+        ]
+    );
         if ($validator->fails()) {
             return response()->json([
-                'message' => $validator->errors()->messages(),
+                'message' => $validator->errors()->first(),
                 'status' => 'error'
             ], 400);
         }
@@ -95,7 +100,7 @@ class PropertyController extends Controller
     public function update(Request $request, $id) {
         $validator = Validator::make($request->all(), [
             'judul' => 'string',
-            'status' => 'string',
+            'status' => 'string|in:dijual,disewakan',
             'tipe_properti' => 'string',
             'deskripsi' => 'string',
             'harga' => 'integer',
@@ -117,7 +122,12 @@ class PropertyController extends Controller
             'kondisi_bangunan' => 'string',
             'images' => 'array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
+        ],
+
+        [ // message for validation status
+            "status.in" => "status must be dijual or disewakan",
+        ]
+    );
 
         if ($validator->fails()) {
             return response()->json([
@@ -510,7 +520,7 @@ class PropertyController extends Controller
             if($request->kecamatan_id){
                 $property->where('kecamatan_id', $request->kecamatan_id);
             }
-        })->with('data', 'data.images')->get('property_id');
+        })->with('data', 'data.images', 'data.creator', 'data.kota', 'data.provinsi', 'data.kecamatan')->get('property_id');
         if($data->count() > 0){
             return response()->json([
                 'message' => 'data found',
