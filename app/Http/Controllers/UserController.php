@@ -251,7 +251,7 @@ class UserController extends Controller
         } else {
             $dijual = count($grouped['dijual']);
         }
-        if(!array_key_exists('disewakan', $grouped)){
+        if(!array_key_exists('disewa', $grouped)){
             $disewa = 0;
         } else {
             $disewa = count($grouped['disewakan']);

@@ -27,6 +27,16 @@ class ArticleController extends Controller
             ], 400);
         }
 
+        $summary = substr($request->content, 0, 100)." ...";
+
+        $request->merge([
+            'summary' => $summary
+        ]);
+
+        $request->merge([
+            'user_id' => auth()->user()->id
+        ]);
+
         $max_slug = Article::where('title', $request->title)->count();
         $slug = Str::slug($request->title . "-" . $max_slug, '-');
 
@@ -87,6 +97,17 @@ class ArticleController extends Controller
             ], 404);
         }
 
+        if($request->content){
+            $summary = substr($request->content, 0, 100)." ...";
+            $request->merge([
+                'summary' => $summary
+            ]);
+        }
+
+        $request->merge([
+            'user_id' => auth()->user()->id
+        ]);
+
         if($request->title && $request->title != Article::find($id)->title){
 
         $max_slug = Article::where('title', $request->title)->count();
@@ -134,7 +155,7 @@ class ArticleController extends Controller
     }
 
     public function list(){
-        $articles = Article::paginate(10, ['id', 'title', 'slug', 'image_url', 'created_at']);
+        $articles = Article::with('creator')->paginate(10, ['id', 'title', 'slug', 'image_url', 'created_at', 'user_id', 'summary']);
         return response()->json([
             'message' => 'success',
             'status' => 'success',
@@ -173,7 +194,7 @@ class ArticleController extends Controller
     }
 
     public function detail($slug){
-        $article = Article::where('slug', $slug)->first();
+        $article = Article::with('creator')->where('slug', $slug)->first();
 
         if (!$article) {
             return response()->json([
