@@ -97,6 +97,85 @@ class PropertyController extends Controller
         }
     }
 
+    public function createWithAgent(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required|string',
+            'status' => 'required|string|in:dijual,disewakan',
+            'tipe_properti' => 'required|string',
+            'deskripsi' => 'required|string',
+            'harga' => 'required|integer',
+            'area' => 'required|string',
+            'provinsi_id' => 'integer',
+            'kota_id' => 'integer',
+            'kecamatan_id' => 'integer',
+            'luas_tanah' => 'integer',
+            'luas_bangunan' => 'integer',
+            'kamar_tidur' => 'integer',
+            'kamar_mandi' => 'integer',
+            'kamar_tidur_pembantu' => 'integer',
+            'kamar_mandi_pembantu' => 'integer',
+            'listrik' => 'integer',
+            'air' => 'string',
+            'sertifikat' => 'string',
+            'posisi_rumah' => 'string',
+            'garasi_dan_carport' => 'integer',
+            'kondisi_bangunan' => 'string',
+            'images' => 'array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ],
+
+       [ // message for validation status
+        "status.in" => "status must be dijual or disewakan",
+        ]
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+                'status' => 'error'
+            ], 400);
+        }
+        $request->merge([
+            'agent_id' => $id
+        ]);
+
+        $max_slug = Property::where('judul', $request->judul)->count();
+        $slug = Str::slug($request->judul . "-" . $max_slug, '-');
+
+        $request->merge([
+            'slug' => $slug
+        ]);
+
+       
+        try {
+            DB::beginTransaction();
+            $property = Property::create($request->except('images'));
+            if($request->hasFile('images') && $property){
+                foreach ($request->file('images') as $key => $value) {
+                    $image_name[] = [
+                        'property_id' => $property->id,
+                        'image_url' => Storage::disk('public')->put('images', $value)
+                    ];
+                }
+                PropertyImage::insert($image_name);
+            }
+            AgentProperty::create([
+                'agent_id' => $request->user()->id,
+                'property_id' => $property->id
+            ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'data created',
+                'status' => 'created'
+            ], 201);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json([
+                'message' => "error when creating data",
+                'status' => 'error'
+            ], 400);
+        }
+    }
+
     public function update(Request $request, $id) {
         $validator = Validator::make($request->all(), [
             'judul' => 'string',
@@ -340,7 +419,9 @@ class PropertyController extends Controller
 
     public function getPaginate(){
         try {
-            $property = Property::with('images', 'creator')->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
+            $property = Property::orderBy(DB::raw('RAND(1234)'))
+            ->with('images', 'creator')
+            ->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
             // dd($property);
             if($property){
                 return response()->json([
@@ -385,8 +466,12 @@ class PropertyController extends Controller
             'max_harga' => 'integer',
             'min_luas_tanah' => 'integer',
             'max_luas_tanah' => 'integer',
-            'kamar_tidur' => 'integer',
             'kamar_mandi' => 'integer',
+            'min_kamar_tidur' => 'integer',
+            'max_kamar_tidur' => 'integer',
+            'min_luas_bagunan' => 'integer',
+            'max_luas_bagunan' => 'integer',
+            'agent_id' => 'integer',
             'provinsi_id' => 'integer',
             'kota_id' => 'integer',
             'kecamatan_id' => 'integer',
@@ -421,8 +506,17 @@ class PropertyController extends Controller
         if($request->max_luas_tanah){
             $property->where('luas_tanah', '<=', $request->max_luas_tanah);
         }
-        if($request->kamar_tidur){
-            $property->where('kamar_tidur', $request->kamar_tidur);
+        if ($request->min_kamar_tidur){
+            $property->where('kamar_tidur', '>=', $request->min_kamar_tidur);
+        }
+        if ($request->max_kamar_tidur){
+            $property->where('kamar_tidur', '<=', $request->max_kamar_tidur);
+        }
+        if ($request->min_luas_bangunan){
+            $property->where('luas_bangunan', '>=', $request->min_luas_bangunan);
+        }
+        if($request->max_luas_bangunan){
+            $property->where('luas_bangunan', '<=', $request->max_luas_bangunan);
         }
         if($request->kamar_mandi){
             $property->where('kamar_mandi', $request->kamar_mandi);
@@ -439,6 +533,9 @@ class PropertyController extends Controller
 
         if($request->is_unggulan){
             $property->has('unggulan');
+        }
+        if($request->agent_id){
+            $property->where('agent_id', $request->agent_id);
         }
 
         if($request->is_highlight){
