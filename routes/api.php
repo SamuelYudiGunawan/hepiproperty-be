@@ -63,6 +63,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/remove-from-unggulan/id/{id}', [PropertyUnggulanController::class, 'removeFromUnggulan']);
             Route::post('/set-highlight/id/{id}', [PropertyUnggulanController::class, 'setHighlight']);
             Route::post('/remove-highlight/id/{id}', [PropertyUnggulanController::class, 'removeHighlight']);
+            // route property image list
+            Route::get('{propertyID}/image/list', [PropertyController::class, 'getImages']);
+            Route::post('{propertyID}/image/upload', [PropertyController::class, 'uploadImages']);
+            Route::post('{propertyID}/image/delete/id/{image_id}', [PropertyController::class, 'deleteImages']);
+            Route::post('{propertyID}/image/delete/batch', [PropertyController::class, 'deleteImagesBatch']);
+            Route::post('{propertyID}/image/update', [PropertyController::class, 'updateImage']);
+            Route::post('{propertyID}/image/update/index', [PropertyController::class, 'updateImageIndex']);
         });
     });
 
