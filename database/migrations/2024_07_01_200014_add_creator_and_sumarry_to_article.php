@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('articles', function (Blueprint $table) {
             $table->string('summary')->default('');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->nullable();
+            $table->bigInteger('user_id')->unsigned()->nullable();
         });
     }
 
