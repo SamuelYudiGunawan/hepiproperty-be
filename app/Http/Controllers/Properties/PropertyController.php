@@ -3,19 +3,22 @@
 namespace App\Http\Controllers\Properties;
 
 use App\Models\Property;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\PropertyImage;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Models\AgentProperty;
-use App\Models\PropertyUnggulan;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Validator;
 use Jorenvh\Share\Share;
 use Mavinoo\Batch\Batch;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\AgentProperty;
+use App\Models\PropertyImage;
+use App\Models\PropertyUnggulan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
+use App\Http\Controllers\Controller;
+use App\Models\PropertyRenter;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Validator;
 
 class PropertyController extends Controller
 {
@@ -39,8 +42,16 @@ class PropertyController extends Controller
             'listrik' => 'integer',
             'air' => 'string',
             'sertifikat' => 'string',
-            'posisi_rumah' => 'string',
-            'garasi_dan_carport' => 'integer',
+            'hadap' => 'string',
+            'garasi' => 'integer',
+            'carport' => 'integer',
+            'lebar_depan_bangunan' => 'integer',
+            'jumlah_lantai' => 'integer',
+            'tipe_harga_sewa' => 'string',
+            'periode_sewa' => 'string',
+            'nama_vendor' => 'string',
+            'no_hp_vendor' => 'string',
+            'alamat' => 'string',
             'kondisi_bangunan' => 'string',
             'images' => 'array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
@@ -197,8 +208,16 @@ class PropertyController extends Controller
             'listrik' => 'integer',
             'air' => 'string',
             'sertifikat' => 'string',
-            'posisi_rumah' => 'string',
-            'garasi_dan_carport' => 'integer',
+            'hadap' => 'string',
+            'garasi' => 'integer',
+            'carport' => 'integer',
+            'lebar_depan_bangunan' => 'integer',
+            'jumlah_lantai' => 'integer',
+            'tipe_harga_sewa' => 'string',
+            'periode_sewa' => 'string',
+            'nama_vendor' => 'string',
+            'no_hp_vendor' => 'string',
+            'alamat' => 'string',
             'kondisi_bangunan' => 'string',
             'images' => 'array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
@@ -251,6 +270,19 @@ class PropertyController extends Controller
                         ];
                     }
                     PropertyImage::insert($image_name);
+                    if ($request->hasAny(['tipe_harga_sewa', 'periode_sewa', 'nama_vendor', 'no_hp_vendor', 'alamat'])){
+                        $request->merge([
+                            'property_id' => $id
+                        ]);
+
+                        $renter = PropertyRenter::where('property_id', $id)->first();
+                        if ($renter){
+                            $renter->update($request->only(['tipe_harga_sewa', 'periode_sewa', 'nama_vendor', 'no_hp_vendor', 'alamat','property_id']));
+                        }else{
+                            PropertyRenter::create($request->only(['tipe_harga_sewa', 'periode_sewa', 'nama_vendor', 'no_hp_vendor', 'alamat', 'property_id']));
+                        }
+                    }
+                    
                 }
                 DB::commit();
                 return response()->json([
@@ -265,7 +297,7 @@ class PropertyController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             return response()->json([
-                'message' => 'error when updating data',
+                'message' => $th->getMessage(),
                 'status' => 'error'
             ], 400);
         }
@@ -395,7 +427,11 @@ class PropertyController extends Controller
 
     public function detail($slug){
         try {
-            $property = Property::with('images', 'creator', 'kota', 'kecamatan', 'provinsi')->where('slug', $slug)->first();
+            $property = Property::with('images', 'creator', 'kota', 'kecamatan', 'provinsi');
+            if(Auth::check()){
+                $property->with('propertyRenters');
+            }
+            $property = $property->where('slug', $slug)->first();
             if($property){
                 $propertyUnggulan = PropertyUnggulan::where('property_id', $property->id)->first();
                 $boolunggulan = $propertyUnggulan ? true : false;
@@ -420,11 +456,16 @@ class PropertyController extends Controller
     }
 
     public function getPaginate(){
+        
         try {
             $property = Property::orderBy(DB::raw('RAND(1234)'))
-            ->with('images', 'creator')
-            ->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
+            ->with('images', 'creator');
+            
             // dd($property);
+            if(Auth::check()){
+                $property->with('propertyRenters');
+            }
+            $property = $property->paginate(10, ['id','slug','judul','tipe_properti','harga','luas_tanah','kamar_mandi','kamar_tidur','agent_id', 'created_at', 'area']);
             if($property){
                 return response()->json([
                     'message' => 'data found',
@@ -446,7 +487,7 @@ class PropertyController extends Controller
 
     public function getPaginateByAgent(Request $request){
         try {
-            $property = AgentProperty::where('agent_id', $request->user()->id)->with('data:id,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,area,created_at', 'data.creator')->paginate(10);
+            $property = AgentProperty::where('agent_id', $request->user()->id)->with('data:id,judul,tipe_properti,harga,luas_tanah,kamar_mandi,kamar_tidur,agent_id,area,created_at', 'data.creator', 'data.propertyRenters')->paginate(10);
             if($property){
                 return response()->json([
                     'message' => 'data found',

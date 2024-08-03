@@ -79,6 +79,11 @@ class Property extends Model
         return $this->belongsTo(Kecamatan::class);
     }
 
+    public function propertyRenters()
+    {
+        return $this->hasOne(PropertyRenter::class, 'property_id', 'id');
+    }
+
     public function GetIsHighlightedAttribute()
     {
         if($this->unggulan){

@@ -14,6 +14,7 @@ use App\Http\Controllers\Listing\CreateListingController;
 use App\Http\Controllers\Listing\GetAllListingController;
 use App\Http\Controllers\Listing\UpdateListingController;
 use App\Http\Controllers\Properties\PropertyUnggulanController;
+use App\Http\Controllers\PropertyRenterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,8 @@ Route::group(['prefix'=>'/auth'], function () {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix'=>'/admin', 'middleware'=>['role:admin|owner']], function () {
+        Route::get('/property/list', [PropertyController::class, 'getPaginate']);
+        Route::get('/property/detail/slug/{slug}', [PropertyController::class, 'detail']);
         Route::group(['prefix'=>'/user'], function () {
             Route::post('/create', [AuthController::class, 'register']);
             Route::post('/update/id/{id}', [UserController::class, 'update']);
@@ -56,6 +59,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::group(['middleware' => ['role:owner|admin|agent']], function () {
             Route::post('/create', [PropertyController::class, 'create']);
             Route::post('/create/agent/{id}', [PropertyController::class, 'createWithAgent']);
+            Route::post('/renter/{propertyID}', [PropertyRenterController::class, 'list']);
+            Route::post('/update/renter/id/{propertyID}', [PropertyRenterController::class, 'create']);
             Route::post('/update/id/{id}', [PropertyController::class, 'update']);
             Route::post('/update/id/{id}/with-image-id', [PropertyController::class, 'updateWithImageId']);
             Route::post('/delete/id/{id}', [PropertyController::class, 'delete']);
