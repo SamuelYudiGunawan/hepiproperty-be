@@ -11,33 +11,8 @@ class Property extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'judul',
-        'status',
-        'tipe_properti',
-        'deskripsi',
-        'harga',
-        'area',
-        'provinsi_id',
-        'kota_id',
-        'kecamatan_id',
-        'luas_tanah',
-        'luas_bangunan',
-        'kamar_tidur',
-        'kamar_mandi',
-        'kamar_tidur_pembantu',
-        'kamar_mandi_pembantu',
-        'listrik',
-        'air',
-        'sertifikat',
-        'posisi_rumah',
-        'garasi_dan_carport',
-        'kondisi_bangunan',
-        'agent_id',
-        'slug'
-    ];
-
-    protected $appends = [ 'date_deff', 'date', 'path', 'is_highlighted' ];
+    protected $guarded = ["id"];
+    protected $appends = ["date_deff", "date", "path", "is_highlighted"];
 
     public function user()
     {
@@ -46,12 +21,15 @@ class Property extends Model
 
     public function images()
     {
-        return $this->hasMany(PropertyImage::class)->orderBy('image_index', 'asc');
+        return $this->hasMany(PropertyImage::class)->orderBy(
+            "image_index",
+            "asc"
+        );
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'agent_id', 'id');
+        return $this->belongsTo(User::class, "agent_id", "id");
     }
 
     public function agents()
@@ -61,7 +39,7 @@ class Property extends Model
 
     public function unggulan()
     {
-        return $this->hasOne(PropertyUnggulan::class, 'property_id', 'id');
+        return $this->hasOne(PropertyUnggulan::class, "property_id", "id");
     }
 
     public function provinsi()
@@ -81,12 +59,12 @@ class Property extends Model
 
     public function propertyRenters()
     {
-        return $this->hasOne(PropertyRenter::class, 'property_id', 'id');
+        return $this->hasOne(PropertyRenter::class, "property_id", "id");
     }
 
     public function GetIsHighlightedAttribute()
     {
-        if($this->unggulan){
+        if ($this->unggulan) {
             return $this->unggulan->highlight;
         }
         return false;
@@ -94,15 +72,17 @@ class Property extends Model
 
     public function getDateDeffAttribute()
     {
-        if($this->created_at){
-        return $this->created_at->locale('id')->longRelativeToNowDiffForHumans();
+        if ($this->created_at) {
+            return $this->created_at
+                ->locale("id")
+                ->longRelativeToNowDiffForHumans();
         }
     }
 
     public function getDateAttribute()
     {
-        if($this->created_at){
-        return $this->created_at->format('d M Y');
+        if ($this->created_at) {
+            return $this->created_at->format("d M Y");
         }
     }
 
