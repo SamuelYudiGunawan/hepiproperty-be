@@ -101,11 +101,11 @@ class PropertyController extends Controller
                 }
                 PropertyImage::insert($image_name);
             }
-           AgentProperty::create([
+            AgentProperty::create([
                 "agent_id" => $request->user()->id,
                 "property_id" => $property->id,
             ]);
-            
+
             if (
                 $request->hasAny([
                     "tipe_harga_sewa",
@@ -118,16 +118,16 @@ class PropertyController extends Controller
                 $request->merge([
                     "property_id" => $property->id,
                 ]);
-                    PropertyRenter::create(
-                        $request->only([
-                            "tipe_harga_sewa",
-                            "periode_sewa",
-                            "nama_vendor",
-                            "no_hp_vendor",
-                            "alamat",
-                            "property_id",
-                        ])
-                    );
+                PropertyRenter::create(
+                    $request->only([
+                        "tipe_harga_sewa",
+                        "periode_sewa",
+                        "nama_vendor",
+                        "no_hp_vendor",
+                        "alamat",
+                        "property_id",
+                    ])
+                );
             }
             DB::commit();
             return response()->json(
@@ -353,7 +353,7 @@ class PropertyController extends Controller
                     }
                     PropertyImage::insert($image_name);
                 }
-                
+
                 if (
                     $request->hasAny([
                         "tipe_harga_sewa",
@@ -363,6 +363,7 @@ class PropertyController extends Controller
                         "alamat",
                     ])
                 ) {
+                    return $request->all();
                     $request->merge([
                         "property_id" => $id,
                     ]);
@@ -400,6 +401,7 @@ class PropertyController extends Controller
                     [
                         "message" => "data updated",
                         "status" => "updated",
+                        "request" => $request->all(),
                     ],
                     200
                 );
