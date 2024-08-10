@@ -363,7 +363,6 @@ class PropertyController extends Controller
                         "alamat",
                     ])
                 ) {
-                    return $request->all();
                     $request->merge([
                         "property_id" => $id,
                     ]);
@@ -401,7 +400,6 @@ class PropertyController extends Controller
                     [
                         "message" => "data updated",
                         "status" => "updated",
-                        "request" => $request->all(),
                     ],
                     200
                 );
