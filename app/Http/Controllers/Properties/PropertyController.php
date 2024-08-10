@@ -33,9 +33,9 @@ class PropertyController extends Controller
                 "deskripsi" => "required|string",
                 "harga" => "required|integer",
                 "area" => "required|string",
-                "provinsi_id" => "integer",
-                "kota_id" => "integer",
-                "kecamatan_id" => "integer",
+                "provinsi_id" => "required|integer",
+                "kota_id" => "required|integer",
+                "kecamatan_id" => "required|integer",
                 "luas_tanah" => "integer",
                 "luas_bangunan" => "integer",
                 "kamar_tidur" => "integer",
@@ -101,10 +101,34 @@ class PropertyController extends Controller
                 }
                 PropertyImage::insert($image_name);
             }
-            AgentProperty::create([
+           AgentProperty::create([
                 "agent_id" => $request->user()->id,
                 "property_id" => $property->id,
             ]);
+            
+            if (
+                $request->hasAny([
+                    "tipe_harga_sewa",
+                    "periode_sewa",
+                    "nama_vendor",
+                    "no_hp_vendor",
+                    "alamat",
+                ])
+            ) {
+                $request->merge([
+                    "property_id" => $property->id,
+                ]);
+                    PropertyRenter::create(
+                        $request->only([
+                            "tipe_harga_sewa",
+                            "periode_sewa",
+                            "nama_vendor",
+                            "no_hp_vendor",
+                            "alamat",
+                            "property_id",
+                        ])
+                    );
+            }
             DB::commit();
             return response()->json(
                 [
@@ -136,9 +160,9 @@ class PropertyController extends Controller
                 "deskripsi" => "required|string",
                 "harga" => "required|integer",
                 "area" => "required|string",
-                "provinsi_id" => "integer",
-                "kota_id" => "integer",
-                "kecamatan_id" => "integer",
+                "provinsi_id" => "required|integer",
+                "kota_id" => "required|integer",
+                "kecamatan_id" => "required|integer",
                 "luas_tanah" => "integer",
                 "luas_bangunan" => "integer",
                 "kamar_tidur" => "integer",
@@ -148,8 +172,16 @@ class PropertyController extends Controller
                 "listrik" => "integer",
                 "air" => "string",
                 "sertifikat" => "string",
-                "posisi_rumah" => "string",
-                "garasi_dan_carport" => "integer",
+                "hadap" => "string",
+                "garasi" => "integer",
+                "carport" => "integer",
+                "lebar_depan_bangunan" => "integer",
+                "jumlah_lantai" => "integer",
+                "tipe_harga_sewa" => "string",
+                "periode_sewa" => "string",
+                "nama_vendor" => "string",
+                "no_hp_vendor" => "string",
+                "alamat" => "string",
                 "kondisi_bangunan" => "string",
                 "images" => "array",
                 "images.*" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048",
@@ -320,46 +352,47 @@ class PropertyController extends Controller
                         ];
                     }
                     PropertyImage::insert($image_name);
-                    if (
-                        $request->hasAny([
-                            "tipe_harga_sewa",
-                            "periode_sewa",
-                            "nama_vendor",
-                            "no_hp_vendor",
-                            "alamat",
-                        ])
-                    ) {
-                        $request->merge([
-                            "property_id" => $id,
-                        ]);
+                }
+                
+                if (
+                    $request->hasAny([
+                        "tipe_harga_sewa",
+                        "periode_sewa",
+                        "nama_vendor",
+                        "no_hp_vendor",
+                        "alamat",
+                    ])
+                ) {
+                    $request->merge([
+                        "property_id" => $id,
+                    ]);
 
-                        $renter = PropertyRenter::where(
-                            "property_id",
-                            $id
-                        )->first();
-                        if ($renter) {
-                            $renter->update(
-                                $request->only([
-                                    "tipe_harga_sewa",
-                                    "periode_sewa",
-                                    "nama_vendor",
-                                    "no_hp_vendor",
-                                    "alamat",
-                                    "property_id",
-                                ])
-                            );
-                        } else {
-                            PropertyRenter::create(
-                                $request->only([
-                                    "tipe_harga_sewa",
-                                    "periode_sewa",
-                                    "nama_vendor",
-                                    "no_hp_vendor",
-                                    "alamat",
-                                    "property_id",
-                                ])
-                            );
-                        }
+                    $renter = PropertyRenter::where(
+                        "property_id",
+                        $id
+                    )->first();
+                    if ($renter) {
+                        $renter->update(
+                            $request->only([
+                                "tipe_harga_sewa",
+                                "periode_sewa",
+                                "nama_vendor",
+                                "no_hp_vendor",
+                                "alamat",
+                                "property_id",
+                            ])
+                        );
+                    } else {
+                        PropertyRenter::create(
+                            $request->only([
+                                "tipe_harga_sewa",
+                                "periode_sewa",
+                                "nama_vendor",
+                                "no_hp_vendor",
+                                "alamat",
+                                "property_id",
+                            ])
+                        );
                     }
                 }
                 DB::commit();
