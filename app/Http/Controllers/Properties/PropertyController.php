@@ -511,6 +511,48 @@ class PropertyController extends Controller
                     }
                     PropertyImage::insert($image_name);
                 }
+
+                if (
+                    $request->hasAny([
+                        "tipe_harga_sewa",
+                        "periode_sewa",
+                        "nama_vendor",
+                        "no_hp_vendor",
+                        "alamat",
+                    ])
+                ) {
+                    $request->merge([
+                        "property_id" => $id,
+                    ]);
+
+                    $renter = PropertyRenter::where(
+                        "property_id",
+                        $id
+                    )->first();
+                    if ($renter) {
+                        $renter->update(
+                            $request->only([
+                                "tipe_harga_sewa",
+                                "periode_sewa",
+                                "nama_vendor",
+                                "no_hp_vendor",
+                                "alamat",
+                                "property_id",
+                            ])
+                        );
+                    } else {
+                        PropertyRenter::create(
+                            $request->only([
+                                "tipe_harga_sewa",
+                                "periode_sewa",
+                                "nama_vendor",
+                                "no_hp_vendor",
+                                "alamat",
+                                "property_id",
+                            ])
+                        );
+                    }
+                }
                 DB::commit();
                 return response()->json(
                     [
@@ -637,7 +679,8 @@ class PropertyController extends Controller
         try {
             $property = Property::orderBy(DB::raw("RAND(1234)"))->with(
                 "images",
-                "creator"
+                "creator",
+                "propertyRenters:id,property_id,periode_sewa,tipe_harga_sewa"
             );
 
             // dd($property);
