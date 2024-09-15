@@ -58,6 +58,7 @@ class PropertyController extends Controller
                 "kondisi_bangunan" => "string",
                 "images" => "array",
                 "images.*" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                "agent_id" => "integer"
             ],
 
             [
@@ -101,10 +102,17 @@ class PropertyController extends Controller
                 }
                 PropertyImage::insert($image_name);
             }
+            if ($request->has("agent_id")) {
+            AgentProperty::create([
+                "agent_id" => $request->agent_id,
+                "property_id" => $property->id,
+            ]);
+        }else{
             AgentProperty::create([
                 "agent_id" => $request->user()->id,
                 "property_id" => $property->id,
             ]);
+        }
 
             if (
                 $request->hasAny([
