@@ -81,6 +81,17 @@ class PropertyController extends Controller
 
         try {
             DB::beginTransaction();
+            if ($request->has("agent_id")) {
+                $property = Property::create(
+                    $validator
+                        ->safe()
+                        ->merge([
+                            "slug" => $slug,
+                            "agent_id" => $request->agent_id,
+                        ])
+                        ->except("images")
+                );
+            }else{
             $property = Property::create(
                 $validator
                     ->safe()
@@ -90,6 +101,7 @@ class PropertyController extends Controller
                     ])
                     ->except("images")
             );
+        }
             if ($request->hasFile("images") && $property) {
                 foreach ($request->file("images") as $key => $value) {
                     $image_name[] = [
@@ -102,7 +114,7 @@ class PropertyController extends Controller
                 }
                 PropertyImage::insert($image_name);
             }
-            if ($request->agent_id) {
+            if ($request->has("agent_id")) {
             AgentProperty::create([
                 "agent_id" => $request->agent_id,
                 "property_id" => $property->id,
