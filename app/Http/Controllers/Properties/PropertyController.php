@@ -228,7 +228,7 @@ class PropertyController extends Controller
                 PropertyImage::insert($image_name);
             }
             AgentProperty::create([
-                "agent_id" => $request->user()->id,
+                "agent_id" => $request->agent_id,
                 "property_id" => $property->id,
             ]);
             DB::commit();
