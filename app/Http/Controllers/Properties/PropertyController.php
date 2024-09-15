@@ -102,7 +102,7 @@ class PropertyController extends Controller
                 }
                 PropertyImage::insert($image_name);
             }
-            if ($request->has("agent_id")) {
+            if ($request->agent_id) {
             AgentProperty::create([
                 "agent_id" => $request->agent_id,
                 "property_id" => $property->id,
