@@ -1263,26 +1263,25 @@ class PropertyController extends Controller
             $request->all(),
             [
                 "images" => "required|array",
-                "images.*.id" => "required|integer",
-                "images.*.file" =>
-                    "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
-                "images.*.image_index" => "required_with:images.*.file|integer",
+                // "images.*.id" => "required|integer",
+                "images.*" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                // "images.*.image_index" => "required_with:images.*.file|integer",
             ],
             [
-                "images.*.file" => [
-                    "required" => "image file is required",
-                    "image" => "image file must be an image",
-                    "mimes" => "image file must be jpeg, png, jpg, gif, svg",
-                    "max" => "image file max size is 2048",
-                ],
-                "images.*.id" => [
-                    "required" => "id is required",
-                    "integer" => "id must be an integer",
-                ],
-                "images.*.image_index" => [
-                    "required" => "image_index is required",
-                    "integer" => "image_index must be an integer",
-                ],
+                // "images.*.file" => [
+                //     "required" => "image file is required",
+                //     "image" => "image file must be an image",
+                //     "mimes" => "image file must be jpeg, png, jpg, gif, svg",
+                //     "max" => "image file max size is 2048",
+                // ],
+                // "images.*.id" => [
+                //     "required" => "id is required",
+                //     "integer" => "id must be an integer",
+                // ],
+                // "images.*.image_index" => [
+                //     "required" => "image_index is required",
+                //     "integer" => "image_index must be an integer",
+                // ],
             ]
         );
 
@@ -1314,30 +1313,30 @@ class PropertyController extends Controller
             DB::beginTransaction();
             foreach ($request->images as $key => $value) {
                 $image_name[] = [
-                    "id" => $value["id"],
+                    // "id" => $value["id"],
                     "property_id" => $propertyID,
                     "image_url" => Storage::disk("public")->put(
                         "images",
-                        $value["file"]
+                        $value
                     ),
-                    "image_index" => $value["image_index"],
+                    // "image_index" => $value["image_index"],
                 ];
-                $deleted_image[] = $value["id"];
+                // $deleted_image[] = $value["id"];
             }
 
-            $deleted_image_data = PropertyImage::whereIn(
-                "id",
-                $deleted_image
+            $deleted_image_data = PropertyImage::where(
+                "property_id",
+                $property->id
             )->get();
 
             foreach ($deleted_image_data as $key => $value) {
                 Storage::disk("public")->delete($value->image_url);
             }
 
-            $data = PropertyImage::upsert(
+            PropertyImage::where("property_id", $property->id)->delete();
+
+            $data = PropertyImage::insert(
                 $image_name,
-                ["id"],
-                ["image_url", "image_index"]
             );
             DB::commit();
             return response()->json(
