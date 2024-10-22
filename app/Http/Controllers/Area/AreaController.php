@@ -20,7 +20,7 @@ class AreaController extends Controller
         }
         return response()->json([
             'message' => 'success',
-            'data' => $area
+            'data' => $area->sortBy('nama')->values()
         ], 200);
     }
 
@@ -34,7 +34,7 @@ class AreaController extends Controller
         }
         return response()->json([
             'message' => 'success',
-            'data' => $area
+            'data' => $area->sortBy('nama')->values()
         ], 200);
     }
 
@@ -48,7 +48,7 @@ class AreaController extends Controller
         }
         return response()->json([
             'message' => 'success',
-            'data' => $area
+            'data' => $area->sortBy('nama')->values()
         ], 200);
     }
 
@@ -104,7 +104,7 @@ class AreaController extends Controller
         }
         return response()->json([
             'message' => 'success',
-            'data' => $area
+            'data' => $area->sortBy('nama')->values()
         ], 200);
     }
 }
