@@ -919,6 +919,7 @@ class PropertyController extends Controller
         }
 
         $data = AgentProperty::where("agent_id", $request->user()->id)
+            ->latest()
             ->whereHas("data", function ($property) use ($request) {
                 if ($request->kata_kunci) {
                     $property->where(
@@ -968,7 +969,6 @@ class PropertyController extends Controller
                 if ($request->kecamatan_id) {
                     $property->where("kecamatan_id", $request->kecamatan_id);
                 }
-                $property->latest();
             })
             ->with(
                 "data",
