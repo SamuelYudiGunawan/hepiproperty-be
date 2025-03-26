@@ -918,7 +918,7 @@ class PropertyController extends Controller
             );
         }
 
-        $data = AgentProperty::where("agent_id", $request->user()->id)
+        $data = AgentProperty::where("agent_id", $request->user()->id)->latest()
             ->whereHas("data", function ($property) use ($request) {
                 if ($request->kata_kunci) {
                     $property->where(
