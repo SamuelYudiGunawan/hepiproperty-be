@@ -2,3 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/u7047694/public_html/hepiproperty-be 
+    - /bin/cp -Rf * $DEPLOYPATH
