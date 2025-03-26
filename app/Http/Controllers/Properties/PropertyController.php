@@ -968,7 +968,6 @@ class PropertyController extends Controller
                 if ($request->kecamatan_id) {
                     $property->where("kecamatan_id", $request->kecamatan_id);
                 }
-                $property->latest();
             })
             ->with([
                 "data" => function($query) {
@@ -980,7 +979,10 @@ class PropertyController extends Controller
                 "data.provinsi",
                 "data.kecamatan"
             ])
-            ->get("property_id");
+            ->join('properties', 'agent_properties.property_id', '=', 'properties.id')
+            ->orderBy('properties.created_at', 'desc')
+            ->select('agent_properties.property_id')
+            ->get();
         if ($data->count() > 0) {
             return response()->json(
                 [
