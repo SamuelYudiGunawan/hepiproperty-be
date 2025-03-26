@@ -983,7 +983,7 @@ class PropertyController extends Controller
                 [
                     "message" => "data found",
                     "status" => "found",
-                    "data" => $data->latest(),
+                    "data" => $data->orderBy("created_at", "desc"),
                 ],
                 200
             );
