@@ -977,14 +977,13 @@ class PropertyController extends Controller
                 "data.provinsi",
                 "data.kecamatan"
             )
-            ->latest()
             ->get("property_id");
         if ($data->count() > 0) {
             return response()->json(
                 [
                     "message" => "data found",
                     "status" => "found",
-                    "data" => $data,
+                    "data" => $data->latest(),
                 ],
                 200
             );
