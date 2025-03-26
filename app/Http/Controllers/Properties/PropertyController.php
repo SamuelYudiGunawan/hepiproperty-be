@@ -697,7 +697,7 @@ class PropertyController extends Controller
     public function getPaginate()
     {
         try {
-            $property = Property::orderBy(DB::raw("RAND(1234)"))->with(
+            $property = Property::latest()->with(
                 "images",
                 "creator",
                 "propertyRenters:id,property_id,periode_sewa,tipe_harga_sewa"

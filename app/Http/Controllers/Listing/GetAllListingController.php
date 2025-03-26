@@ -20,6 +20,6 @@ class GetAllListingController extends Controller
     {
         $result = $this->listingService->getAllListing();
 
-        return response()->success('Success Sent All Listing', Response::HTTP_OK, $result);
+        return response()->success('Success Sent All Listing', Response::HTTP_OK, $result); 
     }
 }
