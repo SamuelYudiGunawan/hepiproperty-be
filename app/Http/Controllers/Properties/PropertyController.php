@@ -926,7 +926,6 @@ class PropertyController extends Controller
                         "like",
                         "%" . $request->kata_kunci . "%"
                     );
-                    $property->latest();
                 }
                 if ($request->status) {
                     $property->where("status", $request->status);
@@ -969,6 +968,7 @@ class PropertyController extends Controller
                 if ($request->kecamatan_id) {
                     $property->where("kecamatan_id", $request->kecamatan_id);
                 }
+                $property->latest();
             })
             ->with(
                 "data",
