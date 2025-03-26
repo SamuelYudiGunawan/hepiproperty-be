@@ -969,20 +969,16 @@ class PropertyController extends Controller
                     $property->where("kecamatan_id", $request->kecamatan_id);
                 }
             })
-            ->with([
-                "data" => function($query) {
-                    $query->latest();
-                },
+            ->with(
+                "data",
                 "data.images",
                 "data.creator",
                 "data.kota",
                 "data.provinsi",
                 "data.kecamatan"
-            ])
-            ->join('properties', 'agent_properties.property_id', '=', 'properties.id')
-            ->orderBy('properties.created_at', 'desc')
-            ->select('agent_properties.property_id')
-            ->get();
+            )
+            ->orderByDesc("created_at")
+            ->get("property_id");
         if ($data->count() > 0) {
             return response()->json(
                 [
