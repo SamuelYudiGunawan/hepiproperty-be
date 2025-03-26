@@ -57,7 +57,7 @@ class PropertyController extends Controller
                 "alamat" => "string",
                 "kondisi_bangunan" => "string",
                 "images" => "array",
-                "images.*" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                "images.*" => "image|mimes:jpeg,png,jpg,gif,svg",
                 "agent_id" => "integer"
             ],
 
@@ -204,7 +204,7 @@ class PropertyController extends Controller
                 "alamat" => "string",
                 "kondisi_bangunan" => "string",
                 "images" => "array",
-                "images.*" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                "images.*" => "image|mimes:jpeg,png,jpg,gif,svg",
             ],
 
             [
@@ -306,7 +306,7 @@ class PropertyController extends Controller
                 "alamat" => "string",
                 "kondisi_bangunan" => "string",
                 "images" => "array",
-                "images.*" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                "images.*" => "image|mimes:jpeg,png,jpg,gif,svg",
             ],
 
             [
@@ -468,7 +468,7 @@ class PropertyController extends Controller
             "garasi_dan_carport" => "integer",
             "kondisi_bangunan" => "string",
             "images" => "array",
-            "images.*" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            "images.*" => "image|mimes:jpeg,png,jpg,gif,svg",
             "image_id" => "array",
         ]);
 
@@ -1089,7 +1089,7 @@ class PropertyController extends Controller
             [
                 "images" => "required|array",
                 "images.*.file" =>
-                    "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                    "required|image|mimes:jpeg,png,jpg,gif,svg",
                 "images.*.image_index" => "required_with:images.*.file|integer",
             ],
             [
@@ -1097,7 +1097,6 @@ class PropertyController extends Controller
                     "required" => "image file is required",
                     "image" => "image file must be an image",
                     "mimes" => "image file must be jpeg, png, jpg, gif, svg",
-                    "max" => "image file max size is 2048",
                 ],
                 "images.*.image_index" => [
                     "required" => "image_index is required",
@@ -1264,7 +1263,7 @@ class PropertyController extends Controller
             [
                 "images" => "required|array",
                 // "images.*.id" => "required|integer",
-                "images.*" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                "images.*" => "required|image|mimes:jpeg,png,jpg,gif,svg",
                 // "images.*.image_index" => "required_with:images.*.file|integer",
             ],
             [
