@@ -977,7 +977,7 @@ class PropertyController extends Controller
                 "data.provinsi",
                 "data.kecamatan"
             )
-            ->orderByDesc("created_at")
+            ->latest()
             ->get("property_id");
         if ($data->count() > 0) {
             return response()->json(
